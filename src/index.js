@@ -51,7 +51,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use("/api/msgs", msgRouter);
+app.use("/api", msgRouter);
 
 server.listen(port, () => {
     console.log(`started on port: ${port}`)
