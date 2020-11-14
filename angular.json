@@ -55,6 +55,7 @@
             "tsConfig": "tsconfig-web.json",
             "aot": true,
             "assets": [
+              { "glob": "**/*", "input": "node_modules/amazon-ivs-player/dist/assets", "output": "/assets/amazon-ivs" },
               "web/favicon.ico",
               "web/assets"
             ],

@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {faArrowRight, faComment} from "@fortawesome/free-solid-svg-icons";
-import {IOService} from "../../shared/services/io.service";
+import {IOService, SocketStatus} from "../../shared/services/io.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-chat-window',
@@ -8,13 +9,29 @@ import {IOService} from "../../shared/services/io.service";
   styleUrls: ['./chat-window.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatWindowComponent {
+export class ChatWindowComponent implements OnDestroy {
 
   readonly faComment = faComment;
   readonly faArrowRight = faArrowRight;
 
-  constructor(private io: IOService) {
-    io.connect()
+  readonly SocketStatus = SocketStatus;
+
+  status: SocketStatus;
+
+  subscriptionStatus: Subscription;
+
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private io: IOService,
+  ) {
+    this.subscriptionStatus = io.status.subscribe(value => {
+      this.status = value;
+      this.changeDetector.markForCheck();
+    })
+  }
+
+  ngOnDestroy() {
+    this.subscriptionStatus?.unsubscribe();
   }
 
   /*

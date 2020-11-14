@@ -9,9 +9,9 @@
       </div>
 
       <!-- Room Status -->
-      <div class="text-success">• XXX Online</div>
-      <div class="text-warning">• Conectando...</div>
-      <div class="text-muted">• Indisponível</div>
+      <div class="text-success" *ngIf="status == SocketStatus.CONNECTED">• XXX Online</div>
+      <div class="text-warning" *ngIf="status == SocketStatus.CONNECTING">• Conectando...</div>
+      <div class="text-muted" *ngIf="status == SocketStatus.DISCONNECTED">• Indisponível</div>
     </div>
   </div>
 
