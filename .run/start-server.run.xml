@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="start-server" type="NodeJSConfigurationType" node-parameters="--inspect=9222 --require ts-node/register" path-to-js-file="web-server/index.ts" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="TS_NODE_PROJECT" value="tsconfig-web-server.json" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

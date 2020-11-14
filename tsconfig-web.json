@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig-shared.json",
+  "compilerOptions": {
+    "outDir": "dist/web",
+    "typeRoots": ["node_modules/@types", "types"]
+  },
+  "files": [
+    "web/main.ts",
+    "web/polyfills.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
