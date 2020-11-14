@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import {faPencilAlt} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRight, faComment} from "@fortawesome/free-solid-svg-icons";
+import {IOService} from "../../shared/services/io.service";
 
 @Component({
   selector: 'app-chat-window',
@@ -9,9 +10,12 @@ import {faPencilAlt} from "@fortawesome/free-solid-svg-icons";
 })
 export class ChatWindowComponent {
 
-  readonly faPencilAlt = faPencilAlt;
+  readonly faComment = faComment;
+  readonly faArrowRight = faArrowRight;
 
-  constructor() { }
+  constructor(private io: IOService) {
+    io.connect()
+  }
 
   /*
 

@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
-import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ChatService {
-  constructor(private socket: Socket) { }
 
+  constructor() { }
+
+  /*
   public sendMessage(chatMsg: ChatMessage) {
     this.socket.emit('message', chatMsg);
   }
@@ -31,12 +29,15 @@ export class ChatService {
       });
     });
   }
+
+   */
 }
 
+/*
 export class ChatMessage {
   name: string;
   user: string;
-  
+
   color: string;
   time: string;
   msg: string;
@@ -61,3 +62,5 @@ export class ChatMessage {
     return "rgb(" + mixedrgb.join(",") + ")";
   }
 }
+
+ */

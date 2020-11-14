@@ -6,6 +6,6 @@
     "typeRoots": ["node_modules/@types", "types"]
   },
   "files": [
-    "web-server/index.ts"
+    "web-server/server.ts"
   ]
 }

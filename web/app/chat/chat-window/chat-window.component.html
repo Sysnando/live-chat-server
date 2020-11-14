@@ -1,6 +1,33 @@
-<p>chat-window works!</p>
-<fa-icon [icon]="faPencilAlt"></fa-icon>
+<div class="d-flex flex-column h-100">
+  <!-- Header -->
+  <div class="card-body flex-grow-0 border-bottom border-dark">
+    <div class="d-flex justify-content-between font-weight-bold">
+      <!-- Room Title -->
+      <div class="text-muted">
+        <fa-icon class="mr-2" [icon]="faComment"></fa-icon>
+        <span>Chat</span>
+      </div>
 
+      <!-- Room Status -->
+      <div class="text-success">• XXX Online</div>
+      <div class="text-warning">• Conectando...</div>
+      <div class="text-muted">• Indisponível</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="card-body flex-grow-1">
+
+  </div>
+
+  <!-- Input -->
+  <div class="card-body flex-grow-0">
+    <div class="d-flex align-items-center">
+      <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white"></label>
+      <fa-icon class="text-primary" [icon]="faArrowRight" size="2x"></fa-icon>
+    </div>
+  </div>
+</div>
 <!--
 
 <div class="container-fluid">

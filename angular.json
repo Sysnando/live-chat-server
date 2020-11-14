@@ -45,6 +45,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "socket.io-client"
+            ],
             "outputPath": "dist/web",
             "index": "web/index.html",
             "main": "web/main.ts",
@@ -93,12 +96,12 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "live-chat:build"
+            "browserTarget": "live-chat:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "live-chat:build:production",
-              "proxyConfig": "proxy.conf.json"
+              "browserTarget": "live-chat:build:production"
             }
           }
         },

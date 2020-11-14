@@ -1,7 +1,8 @@
 import consoleStamp from "console-stamp";
 import express from 'express';
-import io = require("socket.io");
+import { Server } from 'socket.io';
 import * as http from "http";
+import * as path from "path";
 
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });
@@ -14,6 +15,9 @@ const APP = express();
         next();
       });
 
+      // Redirect all non-file unrecognized routes to index.html, in order to support Angular html5mode routes
+      APP.get(/^[^.]*$/, (req, res) => res.sendFile(path.resolve('dist/web/index.html')));
+
 const HTTP_PORT = 8080; // TODO: different port for DEV and PROD
 const HTTP = http.createServer(APP);
       HTTP.listen(HTTP_PORT);
@@ -22,5 +26,7 @@ const HTTP = http.createServer(APP);
 
 // TODO: HTTPS w/ letsencrypt
 
-const IO = io(HTTP);
-      IO.on('connection', socket => {});
+const IO = new Server(HTTP);
+      IO.on('connection', socket => {
+        console.log('connection!')
+      });
