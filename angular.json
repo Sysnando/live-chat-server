@@ -46,6 +46,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
+              "amazon-ivs-player",
               "socket.io-client"
             ],
             "outputPath": "dist/web",

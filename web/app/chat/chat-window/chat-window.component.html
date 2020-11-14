@@ -1,4 +1,11 @@
+
 <div class="d-flex flex-column h-100">
+
+  <!-- streaming -->
+  <div class="flex-grow-0 border-bottom border-dark" style="max-height: 30%">
+      <chat-video [playbackUrl]="'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'" [options]="{ autoplay: true, controls: false }"></chat-video>
+  </div>
+
   <!-- Header -->
   <div class="card-body flex-grow-0 border-bottom border-dark">
     <div class="d-flex justify-content-between font-weight-bold">
