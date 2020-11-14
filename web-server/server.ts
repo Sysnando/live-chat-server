@@ -1,8 +1,9 @@
 import consoleStamp from "console-stamp";
 import express from 'express';
-import { Server } from 'socket.io';
 import * as http from "http";
+import * as cron from 'node-cron';
 import * as path from "path";
+import {ServerIO} from "./server-io";
 
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });
@@ -26,7 +27,7 @@ const HTTP = http.createServer(APP);
 
 // TODO: HTTPS w/ letsencrypt
 
-const IO = new Server(HTTP);
-      IO.on('connection', socket => {
-        console.log('connection!')
-      });
+const IO = new ServerIO(HTTP);
+
+// Broadcast each rooms' capacity every 30s
+cron.schedule('*/30 * * * * *', () => IO.broadcast$size());

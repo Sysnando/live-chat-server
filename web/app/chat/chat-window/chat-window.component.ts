@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {faArrowRight, faComment} from "@fortawesome/free-solid-svg-icons";
 import {IOService, SocketStatus} from "../../shared/services/io.service";
 import {Subscription} from "rxjs";
@@ -16,21 +16,34 @@ export class ChatWindowComponent implements OnDestroy {
 
   readonly SocketStatus = SocketStatus;
 
+  size: number;
   status: SocketStatus;
 
+  subscriptionSize: Subscription;
   subscriptionStatus: Subscription;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
     private io: IOService,
   ) {
-    this.subscriptionStatus = io.status.subscribe(value => {
-      this.status = value;
-      this.changeDetector.markForCheck();
-    })
+    this.subscriptionSize = io.size.subscribe(value => this.onSizeChange(value));
+    this.subscriptionStatus = io.status.subscribe(value => this.onStatusChange(value));
+  }
+
+  onSizeChange(value: number) {
+    this.size = value;
+    this.changeDetector.markForCheck();
+  }
+  onStatusChange(value: SocketStatus) {
+    this.status = value;
+    this.changeDetector.markForCheck();
+
+    if (this.status == SocketStatus.CONNECTED)
+        this.io.join('miku'); // TODO: use the query param
   }
 
   ngOnDestroy() {
+    this.subscriptionSize?.unsubscribe();
     this.subscriptionStatus?.unsubscribe();
   }
 
