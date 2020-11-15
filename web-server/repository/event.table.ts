@@ -1,7 +1,7 @@
-import {Table} from "../table";
+import {Repository} from "../repository";
 import {Event} from "../../web-shared/entity/event";
 
-export abstract class EventTable extends Table {
+export abstract class EventTable extends Repository {
   static async delete(schema: string, id: number): Promise<void> {
     await this.query(
       'DELETE FROM process_lawyer WHERE lawyer_id IN (SELECT id from lawyer WHERE id = $1)',

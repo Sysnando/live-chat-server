@@ -16,7 +16,7 @@
   </div>
 
   <!-- Header -->
-  <div class="card-body flex-grow-0 border-bottom border-dark">
+  <div class="card-body flex-grow-0 flex-shrink-0 border-bottom border-dark">
     <div class="d-flex justify-content-between font-weight-bold">
       <!-- Room Title -->
       <div class="text-muted">
@@ -25,23 +25,30 @@
       </div>
 
       <!-- Room Status -->
-      <div class="text-success" *ngIf="status == SocketStatus.CONNECTED">• {{ size }} Online</div>
-      <div class="text-warning" *ngIf="status == SocketStatus.CONNECTING">• Conectando...</div>
-      <div class="text-muted" *ngIf="status == SocketStatus.DISCONNECTED">• Indisponível</div>
+      <div class="text-success" *ngIf="roomStatus == SocketStatus.CONNECTED">• {{ roomSize }} Online</div>
+      <div class="text-warning" *ngIf="roomStatus == SocketStatus.CONNECTING">• Conectando...</div>
+      <div class="text-muted" *ngIf="roomStatus == SocketStatus.DISCONNECTED">• Indisponível</div>
     </div>
   </div>
 
   <!-- Log -->
-  <div class="card-body flex-grow-1">
-
+  <div class="card-body flex-grow-1 overflow-auto py-0" style="max-height: 100%" #chatLog>
+    <div *ngFor="let message of chatMessages">
+      <span class="text-primary">{{ chatMessage$from(message) }}</span>&nbsp;
+      <span class="text-muted">{{ chatMessage$time(message) }}</span>&nbsp;
+      <span class="text-white">{{ chatMessage$message(message) }}</span>
+    </div>
   </div>
 
   <!-- Input -->
-  <div class="card-body flex-grow-0">
+  <div class="card-body flex-grow-0 flex-shrink-0">
     <div class="d-flex align-items-center">
-      <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white"></label>
-      <fa-icon class="text-primary" [icon]="faArrowRight" size="2x"></fa-icon>
-    </div>j
+      <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white" [(ngModel)]="chatInput" (keyup.enter)="onClickSend()"></label>
+      <button class="btn border-0 p-0" [disabled]="chatDisabled" [ngClass]="chatDisabled ? 'btn-outline-dark' : 'btn-outline-primary'" style="height: 48px; width: 48px"
+              (click)="onClickSend()">
+        <fa-icon [icon]="faArrowRight" size="2x"></fa-icon>
+      </button>
+    </div>
   </div>
 </div>
 

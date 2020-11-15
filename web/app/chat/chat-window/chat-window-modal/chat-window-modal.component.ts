@@ -10,7 +10,7 @@ import {CameraService} from "../../../shared/services/camera.service";
 export class ChatWindowModalComponent implements OnDestroy{
   @ViewChild('topFanvideoElement') topFanvideoElement: ElementRef;
 
-  private page: number = 0;
+  page: number = 0;
 
   constructor(private cameraService: CameraService) {
     this.onConductCodeModal(this.page)

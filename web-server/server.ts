@@ -27,7 +27,9 @@ const HTTP = http.createServer(APP);
 
 // TODO: HTTPS w/ letsencrypt
 
-const IO = new ServerIO(HTTP);
+const IO = ServerIO.INSTANCE(HTTP);
 
-// Broadcast each rooms' capacity every 30s
-cron.schedule('*/30 * * * * *', () => IO.broadcast$size());
+// Scheduler
+cron.schedule('0 */2 * * * *', () => IO.balancer$update()); // Update load balancer every 2 minutes
+cron.schedule('*/30 * * * * *', () => IO.broadcast$size()); // Broadcast each rooms' capacity every 30s
+cron.schedule('0 * * * * *', () => IO.chat$persist());      // Persist chat to database every 1 minute

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 
 
@@ -14,6 +14,9 @@ import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
     // Modules
     CommonModule,
     FontAwesomeModule,
+  ],
+  providers: [
+    DatePipe,
   ]
 })
 export class SharedModule { }

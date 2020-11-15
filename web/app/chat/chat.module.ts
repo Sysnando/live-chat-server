@@ -4,10 +4,16 @@ import {ChatRoutingModule} from "./chat-routing.module";
 import {SharedModule} from "../shared/shared.module";
 import { ChatVideoComponent } from './chat-video/chat-video.component';
 import { ChatWindowModalComponent } from './chat-window/chat-window-modal/chat-window-modal.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
-  declarations: [ChatWindowComponent, ChatVideoComponent, ChatWindowModalComponent],
+  declarations: [
+    ChatWindowComponent,
+    ChatWindowModalComponent,
+    ChatVideoComponent,
+  ],
   imports: [
+    FormsModule,
     SharedModule,
     ChatRoutingModule,
   ]
