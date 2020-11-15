@@ -1,0 +1,76 @@
+<!-- The Modal -->
+<div *ngIf="page >= 0" class="modal" style="display: block">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title text-center"><span>Top Fãs</span></h4>
+        <button type="button" class="close" data-dismiss="modal" (click)="onConductCodeModal(-1)">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body text-center">
+
+        <!-- Coduct of conduct -->
+        <div [style.display]="page === 0 ? 'block' : 'none'">
+          <p class="px-2">Mostra a todos como estás a curtir pela tua webcam, recebendo amor da audiência e acesso exclusivo a conteúdo e prémios únicos.</p>
+          <p class="px-2">Para ser uma experência positiva e segura para todosm monitorizamos o conteúdo em tempo real e criámos algumas regras importantes.</p>
+
+          <h2>Código de coduta</h2>
+
+          <b>Não é permitido</b>
+
+          <ul class="text-left">
+            <li>Nudez parcial ou total.</li>
+            <li>Conteúdo pornográfico ou obsceno.</li>
+            <li>Violência, discriminação, ou mensagens de ódio.</li>
+            <li>Racismo.</li>
+            <li>Política, religião e teorias de conspiração</li>
+            <li>Fazer publicidade a marcas de forma directa.</li>
+            <li>Injeção de código malicioso, ou ligações externas que possam causar danos ao sistema informático.</li>
+          </ul>
+
+          <p style="color: #F29713">Ao carregares seguinte estás a aceitar o código de conduta.</p>
+
+          <button type="button" class="btn btn-light px-4 py-2" style="float: left" (click)="onConductCodeModal(-1)">Cancelar</button>
+          <button type="button" class="btn btn-primary px-4 py-2" style="float: right" (click)="onConductCodeModal(1)">Seguinte</button>
+        </div>
+
+        <!-- Camera test -->
+        <div [style.display]="page === 1 ? 'block' : 'none'">
+          <p class="px-2">Dá permissão para testares a camera antes de participares.</p>
+
+          <div class="row">
+            <div class="col-md-12">
+              <h3>
+                <video class="w-100" style="border-radius: 12px;" #topFanvideoElement></video>
+              </h3>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-primary px-4 py-2" (click)="onConductCodeModal(-1)">Desligar Câmera</button>
+            </div>
+          </div>
+
+          <p class="px-2">Se a câmera funa bem, carrega em finalizar teste que desliga a câmera e colcate-te em fila de espera.</p>
+          <p class="px-2">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+
+          <button type="button" class="btn btn-light px-4 py-2" style="float: left" (click)="onConductCodeModal(0)">Voltar</button>
+          <button type="button" class="btn btn-primary px-4 py-2" style="float: right" (click)="onConductCodeModal(2)">Finalizar Teste</button>
+
+        </div>
+
+        <!-- Counter -->
+        <div [style.display]="page === 2 ? 'block' : 'none'">
+          <p class="px-2">Faltam:</p>
+          <h1 style="color:#F29713">00:05:31</h1>
+
+          <p class="px-2">Podes fechar o popup. Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -27,7 +27,7 @@ export class ChatVideoComponent implements OnInit, OnDestroy {
     });
 
     const player = videojs(
-      'chat-player', this.options, function onPlayerReady() { console.warn('Player is ready to use');}
+      'ushowme-player', this.options, function onPlayerReady() { console.warn('Player is ready to use');}
     ) as videojs.Player & VideoJSIVSTech & VideoJSQualityPlugin;
 
     registerIVSQualityPlugin(videojs);

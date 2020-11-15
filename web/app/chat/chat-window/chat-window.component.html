@@ -3,7 +3,16 @@
 
   <!-- streaming -->
   <div class="flex-grow-0 border-bottom border-dark" style="max-height: 30%">
-      <chat-video [playbackUrl]="'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'" [options]="{ autoplay: true, controls: false }"></chat-video>
+      <chat-video [playbackUrl]="event.url" [options]="{ autoplay: true, controls: false }"></chat-video>
+  </div>
+
+  <div class="d-flex border-bottom border-dark">
+    <div style="font-size: 5vh">
+      <div (click)="onLike()"><fa-icon class="ml-2" style="color:orange" [icon]="faHeart"></fa-icon></div>
+    </div>
+    <div class="flex-grow-1 mr-2 pt-3" style="text-align: right">
+      <button type="button" class="btn btn-primary pr-5 pl-5" style="font-size: 1.2rem" (click)="onConductCodeModal()">Top Fã? Entra aqui</button>
+    </div>
   </div>
 
   <!-- Header -->
@@ -32,40 +41,9 @@
     <div class="d-flex align-items-center">
       <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white"></label>
       <fa-icon class="text-primary" [icon]="faArrowRight" size="2x"></fa-icon>
-    </div>
+    </div>j
   </div>
 </div>
-<!--
 
-<div class="container-fluid">
-  <div class="row live-chat-header">
-    <div class="col bookmark">
-      <span><img src="../assets/chat_bookmark.svg"> Chat</span>
-    </div>
-    <div class="col online">
-      <span>&#9679;</span>
-      <span> {{online}} Online</span>
-    </div>
-  </div>
-  <div class="row live-chat-messages">
-    <div *ngFor="let chatMsg of chatMsgList" class="w-100">
-      <span class="user-message" [style.color]="chatMsg.color">{{chatMsg.user}}</span><span>{{chatMsg.time}}</span> <span>{{chatMsg.msg}}</span>
-    </div>
-  </div>
-  <div class="row live-chat-messages">
-    <div *ngIf="chatMsg.user; else loggedOut" class="input-group mb-3">
-      <input type="text" class="live-chat-input-text form-control" [(ngModel)]="chatMsg.msg" (keyup.enter)="sendMessage()" aria-describedby="button-addon2" >
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary live-chat-input-button" type="button" id="button-addon2" (click)="sendMessage()">
-          <img src="../assets/chat_send_message.svg">
-        </button>
-      </div>
-    </div>
-</div>
+<div *ngIf="modal"><app-chat-window-modal></app-chat-window-modal></div>
 
-<ng-template #loggedOut>
-  <div class="row live-chat-link-login">
-    <a href="">Faça o login</a> 	&#160; para comentário
-  </div>
-</ng-template>
--->

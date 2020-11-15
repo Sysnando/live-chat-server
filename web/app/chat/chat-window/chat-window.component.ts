@@ -2,6 +2,9 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '
 import {faArrowRight, faComment} from "@fortawesome/free-solid-svg-icons";
 import {IOService, SocketStatus} from "../../shared/services/io.service";
 import {Subscription} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
+import {Event, EventService} from "../../shared/services/event.service";
+import {faHeart} from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: 'app-chat-window',
@@ -11,29 +14,40 @@ import {Subscription} from "rxjs";
 })
 export class ChatWindowComponent implements OnDestroy {
 
-  readonly faComment = faComment;
   readonly faArrowRight = faArrowRight;
+  readonly faComment = faComment;
+  readonly faHeart = faHeart;
 
   readonly SocketStatus = SocketStatus;
 
+  event: Event;
+  modal: boolean = false;
   size: number;
   status: SocketStatus;
+  video: any;
 
   subscriptionSize: Subscription;
   subscriptionStatus: Subscription;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
-    private io: IOService,
+    private eventService: EventService,
+    private io: IOService
   ) {
     this.subscriptionSize = io.size.subscribe(value => this.onSizeChange(value));
     this.subscriptionStatus = io.status.subscribe(value => this.onStatusChange(value));
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      eventService.getEventById(params.event).subscribe(event => this.event = event);
+    })
   }
 
   onSizeChange(value: number) {
     this.size = value;
     this.changeDetector.markForCheck();
   }
+
   onStatusChange(value: SocketStatus) {
     this.status = value;
     this.changeDetector.markForCheck();
@@ -42,48 +56,16 @@ export class ChatWindowComponent implements OnDestroy {
         this.io.join('miku'); // TODO: use the query param
   }
 
+  onLike() {
+    console.log('Like ;)')
+  }
+
+  onConductCodeModal() {
+    this.modal = !this.modal;
+  }
+
   ngOnDestroy() {
     this.subscriptionSize?.unsubscribe();
     this.subscriptionStatus?.unsubscribe();
   }
-
-  /*
-
-  online: number = 0;
-  chatMsg: ChatMessage;
-  chatMsgList: ChatMessage[] = [];
-
-  constructor(private chatService: ChatService) {}
-
-  ngOnInit(): void {
-
-    //0. join a chat room
-    this.chatMsg = new ChatMessage("Room", "User");
-    this.chatService.joinChatRoom(this.chatMsg);
-
-    //1. new chat messsages listener
-    this.chatService
-      .getMessages(this.chatMsg)
-      .subscribe((message) => {
-        this.chatMsgList.push(message);
-      });
-
-    //2. online users count listener
-    this.chatService
-      .getOnline(this.chatMsg)
-      .subscribe((online) => {
-        this.online = online;
-      });
-  }
-
-  sendMessage(){
-    if(this.chatMsg) {
-      this.chatMsg.time = formatDate(new Date(), 'hh:mm',  'en-US');
-      this.chatService.sendMessage(this.chatMsg);
-    }
-    this.chatMsg.clean();
-  }
-
-   */
-
 }
