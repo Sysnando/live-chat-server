@@ -10,9 +10,20 @@ $warning: $orange;
 
 $text-muted: $gray;
 
+$btn-border-radius: 32px;
+$btn-font-weight: bold;
+$btn-padding-x: 2.5rem;
+$btn-padding-y: 0.75rem;
+
+$card-spacer-x: 0.75rem;
+$card-spacer-y: 0.75rem;
+$card-border-radius: 32px;
+
 $input-border-color: $gray-500;
 $input-padding-x: 0.75rem;
 $input-padding-y: 0.75rem;
 
-$btn-border-radius: 30px;
-
+$modal-content-border-color: $primary;
+$modal-content-border-radius: 32px;
+$modal-header-padding-x: 1.75rem;
+$modal-inner-padding: 1.75rem;

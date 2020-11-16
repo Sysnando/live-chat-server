@@ -3,7 +3,7 @@ import express from 'express';
 import * as http from "http";
 import * as cron from 'node-cron';
 import * as path from "path";
-import {ServerIO} from "./server-io";
+import {ServerIO} from "./io/io-server";
 
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });

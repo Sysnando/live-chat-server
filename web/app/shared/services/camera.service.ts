@@ -1,27 +1,24 @@
-import {ElementRef, Injectable, ViewChild} from "@angular/core";
+import {Injectable} from "@angular/core";
 
 @Injectable({ providedIn: 'root'})
 export class CameraService {
-  private video: any;
 
-  onInitCamera(element: ElementRef, config: MediaStreamConstraints) {
+  private element: HTMLVideoElement;
 
-    this.video = element.nativeElement;
-    let browser = <any> navigator;
+  start(element: HTMLVideoElement, config: MediaStreamConstraints) {
+    this.element && this.stop();
+    this.element = element;
 
-    browser.getUserMedia = (browser.getUserMedia ||
-      browser.webkitGetUserMedia ||
-      browser.mozGetUserMedia ||
-      browser.msGetUserMedia);
-
-    browser.mediaDevices.getUserMedia(config).then((stream: any) => {
-      this.video.srcObject = stream;
-      this.video.play();
-    });
+    navigator.mediaDevices
+      .getUserMedia(config)
+      .then((stream: any) => {
+        this.element.srcObject = stream;
+        this.element.play();
+      });
   }
 
-  pause() {
-    if (this.video)
-      this.video.pause();
+  stop() {
+    this.element?.pause();
+    this.element = undefined;
   }
 }

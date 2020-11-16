@@ -4,11 +4,11 @@ import videojs from 'video.js';
 import { registerIVSQualityPlugin, registerIVSTech, VideoJSEvents, VideoJSIVSTech, VideoJSQualityPlugin } from 'amazon-ivs-player';
 
 @Component({
-  selector: 'chat-video',
-  templateUrl: './chat-video.component.html',
-  styleUrls: ['./chat-video.component.scss'],
+  selector: 'chat-window-video',
+  templateUrl: './chat-window-video.component.html',
+  styleUrls: ['./chat-window-video.component.scss'],
 })
-export class ChatVideoComponent implements OnInit, OnDestroy {
+export class ChatWindowVideoComponent implements OnInit, OnDestroy {
   @Input() playbackUrl: string;
   @Input() options: {
     autoplay: boolean;

@@ -1,15 +1,16 @@
 import {Server, Socket} from "socket.io";
 import * as http from "http";
-import {ChatCommand} from "../web-shared/chat";
-import {ChatMessage, ChatMessage$JSON} from "../web-shared/entity/chat-message.model";
-import {ChatMessageRepository} from "./repository/chat-message.repository";
-import {Utils} from "../web-shared/utils";
+import {IOCommand} from "../../web-shared/io";
+import {ChatMessage, ChatMessage$JSON} from "../../web-shared/entity/chat-message.model";
+import {ChatMessageRepository} from "../repository/chat-message.repository";
+import {Utils} from "../../web-shared/utils";
 
 export const CHAT_LOG_SIZE = 50;
 
 export const ROOM_SEPARATOR = '$';
 export const ROOM_SEPARATOR_CHILD = '$c';
 export const ROOM_SEPARATOR_FANS = '$f';
+export const ROOM_SEPARATOR_QUEUE = '$f';
 
 export const ROOM_CAPACITY_MAX = 700;
 export const ROOM_CAPACITY_MIN = 300;
@@ -50,7 +51,7 @@ export class ServerIO {
     // Send to each room the root's size
     Array
       .from(this.IO.sockets.adapter.rooms.keys())
-      .forEach(value => this.IO.sockets.in(value).emit(ChatCommand.ROOM_SIZE, sizeByRoot[this.room$root(value)]));
+      .forEach(value => this.IO.sockets.in(value).emit(IOCommand.ROOM_SIZE, sizeByRoot[this.room$root(value)]));
   }
 
   private balancer$grow(room: string): string {
@@ -69,7 +70,7 @@ export class ServerIO {
     if (roomSize < ROOM_CAPACITY_MAX)
       return room;
 
-    return this.balancer$grow(this.room$child(room));
+    return this.balancer$grow(this.room$nameChild(room));
   }
   private balancer$shrink(room: string) {
     let children = this.balancer$roomChildren(room);
@@ -91,7 +92,7 @@ export class ServerIO {
       });
     }
   }
-  private balancer$roomChildren(room: string) { return Array.from(this.IO.sockets.adapter.rooms.keys()).filter(value => value.startsWith(this.room$child(room))) }
+  private balancer$roomChildren(room: string) { return Array.from(this.IO.sockets.adapter.rooms.keys()).filter(value => value.startsWith(this.room$nameChild(room))) }
   private balancer$roomRoot() { return Array.from(this.IO.sockets.adapter.rooms.keys()).filter(value => !value.includes(ROOM_SEPARATOR_CHILD) && !value.includes(ROOM_SEPARATOR_FANS)) }
   private balancer$roomRootSize(room: string) { return this.room$size(room) + this.balancer$roomChildren(room)?.map(value => this.room$size(value)).reduce((a, b) => a + b, 0) || 0 }
 
@@ -108,16 +109,40 @@ export class ServerIO {
     this.CHAT$dirty[room].push(message);
   }
 
-  private room$child(room: string) { return `${ room }${ ROOM_SEPARATOR_CHILD }` }
   private room$name(room: string) { return room?.replace(new RegExp(`/${ ROOM_SEPARATOR }/g`), '') }
+  private room$nameChild(room: string) { return `${ this.room$name(room) }${ ROOM_SEPARATOR_CHILD }` }
+  private room$nameFans(room: string) { return `${ this.room$root(this.room$name(room)) }${ ROOM_SEPARATOR_FANS }` }
+  private room$nameQueue(room: string) { return `${ this.room$root(this.room$name(room)) }${ ROOM_SEPARATOR_QUEUE }` }
+
   private room$parent(room: string) { return room?.includes(ROOM_SEPARATOR_CHILD) ? room?.slice(0, room.lastIndexOf(ROOM_SEPARATOR_CHILD)) : room }
   private room$root(room: string) { return room?.includes(ROOM_SEPARATOR_CHILD) ? room?.slice(0, room.indexOf(ROOM_SEPARATOR_CHILD)) : room }
   private room$size(room: string) { return this.IO.sockets.adapter.rooms.get(room)?.size || 0 }
   private room$sockets(room: string) { return Array.from(this.IO.sockets.adapter.rooms.get(room)).map(value => this.IO.sockets.sockets.get(value)) }
 
   private onConnection(socket: Socket) {
-    socket.on(ChatCommand.ROOM_JOIN, (room: string) => this.onRoomJoin(socket, room));
-    socket.on(ChatCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(socket, new ChatMessage(message)));
+    socket.on(IOCommand.QUEUE_JOIN, () => this.onQueueJoin(socket));
+    socket.on(IOCommand.QUEUE_LEAVE, () => this.onQueueLeave(socket));
+
+    socket.on(IOCommand.ROOM_JOIN, (room: string) => this.onRoomJoin(socket, room));
+    socket.on(IOCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(socket, new ChatMessage(message)));
+  }
+
+  private onQueueJoin(socket: Socket) {
+    let room = Array.from(socket.rooms)[0];
+    if (room == undefined) return;
+
+    let roomQueue = this.room$nameQueue(room);
+
+    socket.join(roomQueue);
+    socket.emit(IOCommand.QUEUE_JOIN);
+    socket.emit(IOCommand.QUEUE_SIZE, this.room$size(roomQueue));
+  }
+  private onQueueLeave(socket: Socket) {
+    let room = Array.from(socket.rooms).find(value => !value.includes(ROOM_SEPARATOR_QUEUE));
+    if (room == undefined) return;
+
+    socket.leave(this.room$nameQueue(room));
+    socket.emit(IOCommand.QUEUE_LEAVE);
   }
 
   private onRoomJoin(socket: Socket, room: string) {
@@ -131,8 +156,8 @@ export class ServerIO {
 
     // Send room size & chat log
     this.chat$load(room).then(value => {
-      socket.emit(ChatCommand.ROOM_SIZE, this.balancer$roomRootSize(this.room$root(room)));
-      socket.emit(ChatCommand.ROOM_MESSAGE_LOG, value)
+      socket.emit(IOCommand.ROOM_SIZE, this.balancer$roomRootSize(this.room$root(room)));
+      socket.emit(IOCommand.ROOM_MESSAGE_LOG, value)
     });
   }
   private onRoomMessage(socket: Socket, message: ChatMessage) {
@@ -140,7 +165,7 @@ export class ServerIO {
 
     let room = Array.from(socket.rooms)?.filter(value => !value.includes(ROOM_SEPARATOR_FANS))?.[0];
     if (room) {
-      this.IO.in(room).emit(ChatCommand.ROOM_MESSAGE, message);
+      this.IO.in(room).emit(IOCommand.ROOM_MESSAGE, message);
       this.chat$push(room, message);
     }
   }

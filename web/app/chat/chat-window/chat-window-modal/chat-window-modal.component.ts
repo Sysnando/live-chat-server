@@ -1,5 +1,14 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+  EventEmitter, Output
+} from '@angular/core';
 import {CameraService} from "../../../shared/services/camera.service";
+import {faTimes} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-chat-window-modal',
@@ -8,23 +17,29 @@ import {CameraService} from "../../../shared/services/camera.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatWindowModalComponent implements OnDestroy{
-  @ViewChild('topFanvideoElement') topFanvideoElement: ElementRef;
 
-  page: number = 0;
+  readonly faTimes = faTimes;
 
-  constructor(private cameraService: CameraService) {
-    this.onConductCodeModal(this.page)
+  @ViewChild('cameraPreview')   cameraPreview: ElementRef;
+
+  @Output()                     modalClose = new EventEmitter<boolean>();
+                                modalPage = 0;
+
+  constructor(private camera: CameraService) {}
+
+  onClickClose() {
+    this.modalClose.next(this.modalPage == 2);
   }
 
-  onConductCodeModal(page: number) {
-    this.page = page;
-
-    if(page === 1) {
-      this.cameraService.onInitCamera(this.topFanvideoElement, { video: { facingMode: "user" } })
-    }
+  onClickPage(page: number) {
+    this.modalPage = page;
+    this.modalPage == 1
+      ? this.camera.start(this.cameraPreview.nativeElement, { video: { facingMode: "user" } })
+      : this.camera.stop();
   }
 
   ngOnDestroy(): void {
-    this.cameraService.pause();
+    this.camera.stop();
   }
+
 }

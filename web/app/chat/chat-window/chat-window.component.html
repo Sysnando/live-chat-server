@@ -1,17 +1,19 @@
-
 <div class="d-flex flex-column h-100">
 
-  <!-- streaming -->
-  <div class="flex-grow-0 border-bottom border-dark" style="max-height: 30%">
-      <chat-video [playbackUrl]="event.url" [options]="{ autoplay: true, controls: false }"></chat-video>
-  </div>
+  <!-- Top Fans -->
+  <div class="card-body flex-grow-0 border-bottom border-dark">
+    <!-- Video -->
+    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [playbackUrl]="event.url" [options]="{ autoplay: true, controls: false }"></chat-window-video>
 
-  <div class="d-flex border-bottom border-dark">
-    <div style="font-size: 5vh">
-      <div (click)="onLike()"><fa-icon class="ml-2" style="color:orange" [icon]="faHeart"></fa-icon></div>
-    </div>
-    <div class="flex-grow-1 mr-2 pt-3" style="text-align: right">
-      <button type="button" class="btn btn-primary pr-5 pl-5" style="font-size: 1.2rem" (click)="onConductCodeModal()">Top Fã? Entra aqui</button>
+    <!-- Modal -->
+    <app-chat-window-modal *ngIf="modalOpen" (modalClose)="onModalClose($event)"></app-chat-window-modal>
+
+    <!-- Actions -->
+    <div class="d-flex align-items-center justify-content-between pt-2">
+      <button class="btn btn-outline-primary border-0 mr-3 p-0" style="height: 50px; width: 50px" (click)="onClickLike()">
+        <fa-icon [icon]="faHeart" style="font-size: 1.50rem; line-height: 1.50rem"></fa-icon>
+      </button>
+      <button class="btn btn-primary flex-grow-1" (click)="onModalOpen()">Top Fã? Entra aqui</button>
     </div>
   </div>
 
@@ -25,14 +27,14 @@
       </div>
 
       <!-- Room Status -->
-      <div class="text-success" *ngIf="roomStatus == SocketStatus.CONNECTED">• {{ roomSize }} Online</div>
-      <div class="text-warning" *ngIf="roomStatus == SocketStatus.CONNECTING">• Conectando...</div>
-      <div class="text-muted" *ngIf="roomStatus == SocketStatus.DISCONNECTED">• Indisponível</div>
+      <div class="text-success" *ngIf="socketStatus == SocketStatus.CONNECTED">• {{ roomSize }} Online</div>
+      <div class="text-warning" *ngIf="socketStatus == SocketStatus.CONNECTING">• Conectando...</div>
+      <div class="text-muted" *ngIf="socketStatus == SocketStatus.DISCONNECTED">• Indisponível</div>
     </div>
   </div>
 
   <!-- Log -->
-  <div class="card-body flex-grow-1 overflow-auto py-0" style="max-height: 100%" #chatLog>
+  <div class="card-body flex-grow-1 overflow-auto" style="max-height: 100%" #chatLog>
     <div *ngFor="let message of chatMessages">
       <span class="text-primary">{{ chatMessage$from(message) }}</span>&nbsp;
       <span class="text-muted">{{ chatMessage$time(message) }}</span>&nbsp;
@@ -51,6 +53,3 @@
     </div>
   </div>
 </div>
-
-<div *ngIf="modal"><app-chat-window-modal></app-chat-window-modal></div>
-

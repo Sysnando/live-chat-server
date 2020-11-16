@@ -1,76 +1,70 @@
-<!-- The Modal -->
-<div *ngIf="page >= 0" class="modal" style="display: block">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center"><span>Top Fãs</span></h4>
-        <button type="button" class="close" data-dismiss="modal" (click)="onConductCodeModal(-1)">&times;</button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-
-        <!-- Coduct of conduct -->
-        <div [style.display]="page === 0 ? 'block' : 'none'">
-          <p class="px-2">Mostra a todos como estás a curtir pela tua webcam, recebendo amor da audiência e acesso exclusivo a conteúdo e prémios únicos.</p>
-          <p class="px-2">Para ser uma experência positiva e segura para todosm monitorizamos o conteúdo em tempo real e criámos algumas regras importantes.</p>
-
-          <h2>Código de coduta</h2>
-
-          <b>Não é permitido</b>
-
-          <ul class="text-left">
-            <li>Nudez parcial ou total.</li>
-            <li>Conteúdo pornográfico ou obsceno.</li>
-            <li>Violência, discriminação, ou mensagens de ódio.</li>
-            <li>Racismo.</li>
-            <li>Política, religião e teorias de conspiração</li>
-            <li>Fazer publicidade a marcas de forma directa.</li>
-            <li>Injeção de código malicioso, ou ligações externas que possam causar danos ao sistema informático.</li>
-          </ul>
-
-          <p style="color: #F29713">Ao carregares seguinte estás a aceitar o código de conduta.</p>
-
-          <button type="button" class="btn btn-light px-4 py-2" style="float: left" (click)="onConductCodeModal(-1)">Cancelar</button>
-          <button type="button" class="btn btn-primary px-4 py-2" style="float: right" (click)="onConductCodeModal(1)">Seguinte</button>
-        </div>
-
-        <!-- Camera test -->
-        <div [style.display]="page === 1 ? 'block' : 'none'">
-          <p class="px-2">Dá permissão para testares a camera antes de participares.</p>
-
-          <div class="row">
-            <div class="col-md-12">
-              <h3>
-                <video class="w-100" style="border-radius: 12px;" #topFanvideoElement></video>
-              </h3>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-12">
-              <button type="button" class="btn btn-primary px-4 py-2" (click)="onConductCodeModal(-1)">Desligar Câmera</button>
-            </div>
-          </div>
-
-          <p class="px-2">Se a câmera funa bem, carrega em finalizar teste que desliga a câmera e colcate-te em fila de espera.</p>
-          <p class="px-2">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
-
-          <button type="button" class="btn btn-light px-4 py-2" style="float: left" (click)="onConductCodeModal(0)">Voltar</button>
-          <button type="button" class="btn btn-primary px-4 py-2" style="float: right" (click)="onConductCodeModal(2)">Finalizar Teste</button>
-
-        </div>
-
-        <!-- Counter -->
-        <div [style.display]="page === 2 ? 'block' : 'none'">
-          <p class="px-2">Faltam:</p>
-          <h1 style="color:#F29713">00:05:31</h1>
-
-          <p class="px-2">Podes fechar o popup. Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
-        </div>
-      </div>
-
+<div class="modal-dialog">
+  <div class="modal-content">
+    <!-- Header -->
+    <div class="modal-header align-items-center border-0">
+      <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center text-primary w-100" style="left: 0">Top Fãs</h4>
+      <button class="close" (click)="onClickClose()">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
     </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+
+      <!-- 0. Coduct of Conduct -->
+      <div [ngClass]="{ 'd-none': modalPage != 0 }">
+        <p class="text-justify">Mostra a todos como estás a curtir pela tua webcam, recebendo amor da audiência e acesso exclusivo a conteúdo e prémios únicos.</p>
+        <p class="text-justify">Para ser uma experência positiva e segura para todos monitorizamos o conteúdo em tempo real e criámos algumas regras importantes.</p>
+
+        <h4 class="font-weight-bolder text-center text-primary">Código de coduta</h4>
+        <h6 class="font-weight-bolder text-center">Não é permitido</h6>
+
+        <ul class="text-justify">
+          <li>Nudez parcial ou total.</li>
+          <li>Conteúdo pornográfico ou obsceno.</li>
+          <li>Violência, discriminação, ou mensagens de ódio.</li>
+          <li>Racismo.</li>
+          <li>Política, religião e teorias de conspiração</li>
+          <li>Fazer publicidade a marcas de forma directa.</li>
+          <li>Injeção de código malicioso, ou ligações externas que possam causar danos ao sistema informático.</li>
+        </ul>
+
+        <p class="text-center text-primary">Ao carregares seguinte estás a aceitar o código de conduta.</p>
+
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-outline-primary" (click)="onClickPage(-1)">Cancelar</button>
+          <button class="btn btn-primary" (click)="onClickPage(1)">Seguinte</button>
+        </div>
+      </div>
+
+      <!-- 1. Camera Setup -->
+      <div [ngClass]="{ 'd-none': modalPage != 1 }">
+        <p class="text-justify">Dá permissão para testares a câmera antes de participares.</p>
+
+        <div class="card border border-primary overflow-hidden mb-3">
+          <video class="w-100" #cameraPreview></video>
+        </div>
+
+        <p class="text-justify">Se a câmera funciona bem, carrega em finalizar teste que desliga a câmera e coloca-te em fila de espera.</p>
+        <p class="text-justify">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-outline-primary" (click)="onClickPage(0)">Voltar</button>
+          <button class="btn btn-primary" (click)="onClickPage(2)">Finalizar Teste</button>
+        </div>
+      </div>
+
+      <!-- 2. Ready -->
+      <div [style.display]="modalPage === 2 ? 'block' : 'none'">
+        <h4 class="font-weight-bolder text-center">Tudo pronto!</h4>
+
+        <p class="text-justify">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+
+        <div class="d-flex justify-content-center">
+          <button class="btn btn-primary" (click)="onClickClose()">Fechar</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

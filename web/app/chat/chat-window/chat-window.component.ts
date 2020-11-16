@@ -25,15 +25,16 @@ export class ChatWindowComponent implements OnDestroy {
   readonly SocketStatus = SocketStatus;
 
   event: Event;
-  modal: boolean = false;
-  video: any;
 
                         chatInput: string;
                         chatMessages: ChatMessage[] = [];
   @ViewChild('chatLog') chatLog: ElementRef;
 
+                        modalOpen: boolean;
+
                         roomSize: number;
-                        roomStatus: SocketStatus;
+
+                        socketStatus: SocketStatus;
 
                         subscriptionMessage: Subscription;
                         subscriptionSize: Subscription;
@@ -55,11 +56,33 @@ export class ChatWindowComponent implements OnDestroy {
     })
   }
 
-  get chatDisabled() { return this.roomStatus != SocketStatus.CONNECTED || !this.chatInput?.trim().length }
+  get chatDisabled() { return this.socketStatus != SocketStatus.CONNECTED || !this.chatInput?.trim().length }
 
   chatMessage$from(message: ChatMessage) { return message?.from }
   chatMessage$message(message: ChatMessage) { return message?.message }
   chatMessage$time(message: ChatMessage) { return message?.time && this.date.transform(message.time, 'HH:mm') }
+
+  onClickSend() {
+    if (this.chatDisabled) return;
+
+    this.io.roomSend(this.chatInput);
+    this.chatInput = '';
+    this.changeDetector.markForCheck();
+  }
+  onClickLike() {
+    console.log('Like ;)')
+  }
+
+  onModalOpen() {
+    this.modalOpen = true;
+    this.changeDetector.markForCheck();
+  }
+  onModalClose(success: boolean) {
+    this.modalOpen = false;
+    this.changeDetector.markForCheck();
+
+    // TODO:
+  }
 
   onRoomMessage(value: ChatMessage) {
     this.chatMessages.push(value);
@@ -72,30 +95,15 @@ export class ChatWindowComponent implements OnDestroy {
     this.roomSize = value;
     this.changeDetector.markForCheck();
   }
+
   onSocketStatus(value: SocketStatus) {
-    this.roomStatus = value;
+    this.socketStatus = value;
     this.changeDetector.markForCheck();
 
-    if (this.roomStatus == SocketStatus.CONNECTED) {
+    if (this.socketStatus == SocketStatus.CONNECTED) {
         this.chatMessages = [];
-        this.io.join('Sr. Banana', 'miku'); // TODO: use the query params
+        this.io.roomJoin('Sr. Banana', 'miku'); // TODO: use the query params
     }
-  }
-
-  onLike() {
-    console.log('Like ;)')
-  }
-
-  onConductCodeModal() {
-    this.modal = !this.modal;
-  }
-
-  onClickSend() {
-    if (this.chatDisabled) return;
-
-    this.io.send(this.chatInput);
-    this.chatInput = '';
-    this.changeDetector.markForCheck();
   }
 
   ngOnDestroy() {

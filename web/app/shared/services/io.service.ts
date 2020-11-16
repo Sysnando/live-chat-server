@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {io, Socket} from 'socket.io-client';
 import {BehaviorSubject, Subject} from "rxjs";
-import {ChatCommand} from "../../../../web-shared/chat";
+import {IOCommand} from "../../../../web-shared/io";
 import {ChatMessage, ChatMessage$JSON} from "../../../../web-shared/entity/chat-message.model";
 
 @Injectable({ providedIn: 'root' })
@@ -21,9 +21,9 @@ export class IOService {
     this.socket.on('disconnect', () => this.socketStatus.next(SocketStatus.CONNECTING));
     this.socket.on('error', () => this.socketStatus.next(SocketStatus.DISCONNECTED));
 
-    this.socket.on(ChatCommand.ROOM_MESSAGE, (value: ChatMessage$JSON) => this.roomMessage.next(new ChatMessage(value)));
-    this.socket.on(ChatCommand.ROOM_MESSAGE_LOG, (value: ChatMessage$JSON[]) => value?.length && value.forEach(value => this.roomMessage.next(new ChatMessage(value))));
-    this.socket.on(ChatCommand.ROOM_SIZE, (value: number) => this.roomSize.next(value));
+    this.socket.on(IOCommand.ROOM_MESSAGE, (value: ChatMessage$JSON) => this.roomMessage.next(new ChatMessage(value)));
+    this.socket.on(IOCommand.ROOM_MESSAGE_LOG, (value: ChatMessage$JSON[]) => value?.length && value.forEach(value => this.roomMessage.next(new ChatMessage(value))));
+    this.socket.on(IOCommand.ROOM_SIZE, (value: number) => this.roomSize.next(value));
   }
 
   get roomMessage$() { return this.roomMessage.asObservable() }
@@ -31,18 +31,24 @@ export class IOService {
 
   get socketStatus$() { return this.socketStatus.asObservable() }
 
-  join(name: string, room: string) {
-    this.name = name;
-
-    this.socket.emit(ChatCommand.ROOM_JOIN, room);
+  queueJoin() {
+    this.socket.emit(IOCommand.QUEUE_JOIN);
+  }
+  queueLeave() {
+    this.socket.emit(IOCommand.QUEUE_LEAVE);
   }
 
-  send(message: string) {
+  roomJoin(name: string, room: string) {
+    this.name = name;
+
+    this.socket.emit(IOCommand.ROOM_JOIN, room);
+  }
+  roomSend(message: string) {
     let chat = new ChatMessage();
         chat.from = this.name;
         chat.message = message;
 
-    this.socket.emit(ChatCommand.ROOM_MESSAGE, chat);
+    this.socket.emit(IOCommand.ROOM_MESSAGE, chat);
   }
 
 }
