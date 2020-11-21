@@ -49,7 +49,7 @@ export class ChatMessage extends Entity<ChatMessage$ID, ChatMessage$JSON, ChatMe
 
 export type ChatMessage$ID = void;
 export interface ChatMessage$JSON extends Entity$JSON<ChatMessage$ID> {
-  from: string;
+  from?: string;
   message: string;
   room?: string;
   time?: number;

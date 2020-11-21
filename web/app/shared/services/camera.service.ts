@@ -1,24 +1,33 @@
 import {Injectable} from "@angular/core";
+import {BehaviorSubject} from "rxjs";
 
 @Injectable({ providedIn: 'root'})
 export class CameraService {
 
-  private element: HTMLVideoElement;
+  private video = new BehaviorSubject<HTMLVideoElement>(undefined);
+  private videoStream = new BehaviorSubject<MediaStream>(undefined);
 
-  start(element: HTMLVideoElement, config: MediaStreamConstraints) {
-    this.element && this.stop();
-    this.element = element;
+  constructor() {}
 
-    navigator.mediaDevices
-      .getUserMedia(config)
-      .then((stream: any) => {
-        this.element.srcObject = stream;
-        this.element.play();
-      });
+  get video$() { return this.video.asObservable() }
+  get videoStream$() { return this.videoStream.asObservable() }
+
+  start(config: MediaStreamConstraints, video: HTMLVideoElement): Promise<void> {
+    this.video.getValue() && this.stop();
+    this.video.next(video);
+
+    return navigator.mediaDevices.getUserMedia(config)
+      .then((value: MediaStream) => this.videoStream.next(video.srcObject = value))
+      .then(() => video.play());
   }
 
   stop() {
-    this.element?.pause();
-    this.element = undefined;
+    this.video.getValue()?.pause();
+    this.video.next(undefined);
+
+    this.videoStream.getValue()?.getAudioTracks().forEach(value => value.stop());
+    this.videoStream.getValue()?.getVideoTracks().forEach(value => value.stop());
+    this.videoStream.next(undefined);
   }
+
 }

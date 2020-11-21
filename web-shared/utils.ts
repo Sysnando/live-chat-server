@@ -86,6 +86,7 @@ export abstract class Utils {
   }
 
   static objectKeys<T>(object: T) { return Object.keys(object).map(key => key as keyof T) }
+  static objectValues<T>(object: { [key: string]: T }) { return Utils.objectKeys(object).map(value => object[value]) }
 
   // Remove accents, cedilha, etc., while maintaining casing
   // Thanks https://stackoverflow.com/a/37511463

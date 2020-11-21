@@ -15,3 +15,8 @@
 
   z-index: 1000;
 }
+
+video {
+  transform: scaleX(-1);
+  width: 100%;
+}

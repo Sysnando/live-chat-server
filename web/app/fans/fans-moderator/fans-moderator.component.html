@@ -1,0 +1,13 @@
+<!-- Click to activate (otherwise chrome prevents the video from playing) -->
+<div class="d-flex align-items-center justify-content-center bg-dark position-absolute" style="height: 100%; width: 100%; z-index: 1"
+     (click)="active = true" *ngIf="!active">
+  <h1 class="text-white">Click to activate</h1>
+</div>
+
+<!-- Current -->
+<app-fans-video [id]="peer" [moderator]="true"></app-fans-video>
+
+<!-- Queue -->
+<div style="display: grid; grid-template-columns: 33.33% 33.33% 33.33%; grid-template-rows: 33.33% 33.33% 33.33%">
+  <app-fans-video *ngFor="let peer of peerQueue; trackBy: trackByValue" [id]="peer" [moderator]="true"></app-fans-video>
+</div>

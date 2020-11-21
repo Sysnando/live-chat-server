@@ -1,173 +1,76 @@
 import {Server, Socket} from "socket.io";
-import * as http from "http";
-import {IOCommand} from "../../web-shared/io";
 import {ChatMessage, ChatMessage$JSON} from "../../web-shared/entity/chat-message.model";
-import {ChatMessageRepository} from "../repository/chat-message.repository";
 import {Utils} from "../../web-shared/utils";
+import {IORoom} from "./io-room";
+import {IOUser} from "./io-user";
+import {IOCommand} from "../../web-shared/io";
+import * as http from "http";
+import {RTCAnswer, RTCCandidate, RTCOffer} from "../../web-shared/rtc";
 
-export const CHAT_LOG_SIZE = 50;
+export class IOServer {
 
-export const ROOM_SEPARATOR = '$';
-export const ROOM_SEPARATOR_CHILD = '$c';
-export const ROOM_SEPARATOR_FANS = '$f';
-export const ROOM_SEPARATOR_QUEUE = '$f';
-
-export const ROOM_CAPACITY_MAX = 700;
-export const ROOM_CAPACITY_MIN = 300;
-
-export class ServerIO {
-
-  private static INSTANCE$: ServerIO;
-  public  static INSTANCE(server?: http.Server) { return ServerIO.INSTANCE$ = ServerIO.INSTANCE$ || new ServerIO(server) }
+  private static INSTANCE$: IOServer;
+  public  static INSTANCE(server?: http.Server) { return IOServer.INSTANCE$ = IOServer.INSTANCE$ || new IOServer(server) }
 
   private readonly IO: Server;
 
-  private readonly CHAT$dirty: { [key: string]: ChatMessage[] } = {};
-  private readonly CHAT$log: { [key: string]: ChatMessage[] } = {};
+  private readonly IO$ROOMS: { [key: string]: IORoom } = {};
+  private readonly IO$USERS: { [key: string]: IOUser } = {};
 
   private constructor(server: http.Server) {
     this.IO = new Server(server);
     this.IO.on('connection', (value: Socket) => this.onConnection(value));
   }
 
-  balancer$update() {
-    this.balancer$roomRoot().forEach(value => this.balancer$shrink(value));
-  }
+  update$chat$log() { this.room$list().forEach(value => value.update$chat$log()) }
+  update$chat$room() { this.room$list().forEach(value => value.update$chat$room()) }
+  update$chat$size() { this.room$list().forEach(value => value.update$chat$size()) }
 
-  chat$persist() {
-    Utils.objectKeys(this.CHAT$dirty)
-      .filter(key => this.CHAT$dirty[key]?.length)
-      .forEach(key => {
-        let messages = this.CHAT$dirty[key];
-
-        ChatMessageRepository.INSTANCE.saveAll(messages)
-        this.CHAT$dirty[key] = [];
-      });
-  }
-
-  broadcast$size() {
-    let sizeByRoot = this.balancer$roomRoot().reduce((acc, value) => { acc[value] = this.balancer$roomRootSize(value); return acc }, {} as any);
-
-    // Send to each room the root's size
-    Array
-      .from(this.IO.sockets.adapter.rooms.keys())
-      .forEach(value => this.IO.sockets.in(value).emit(IOCommand.ROOM_SIZE, sizeByRoot[this.room$root(value)]));
-  }
-
-  private balancer$grow(room: string): string {
-    let roomRoot = this.room$root(room);
-    let roomSize = this.room$size(room);
-
-    // If the room is empty, it means we just reached the bottom and now we must distribute some of the users from the parent
-    if (roomSize == 0 && roomRoot != room) {
-      this.room$sockets(this.room$parent(room)).slice(0, ROOM_CAPACITY_MAX / 2).forEach(value => {
-        value.join(room);
-        value.leave(this.room$parent(room));
-      });
-    }
-
-    // If the room is not empty but also not full, simply join it
-    if (roomSize < ROOM_CAPACITY_MAX)
-      return room;
-
-    return this.balancer$grow(this.room$nameChild(room));
-  }
-  private balancer$shrink(room: string) {
-    let children = this.balancer$roomChildren(room);
-        children = children.sort((a, b) => -a.localeCompare(b));
-
-    for (let i = children.length - 1; i >= 0; i --) {
-      let child = children[i];
-      let childSize = this.room$size(child);
-      if (childSize > ROOM_CAPACITY_MIN) continue;
-
-      let childParent = this.room$parent(child);
-      let childParentSize = this.room$size(childParent);
-      if (childParentSize + childSize >= ROOM_CAPACITY_MAX) continue;
-
-      // Merge child room with parent
-      this.room$sockets(child).forEach(value => {
-        value.join(childParent);
-        value.leave(child);
-      });
-    }
-  }
-  private balancer$roomChildren(room: string) { return Array.from(this.IO.sockets.adapter.rooms.keys()).filter(value => value.startsWith(this.room$nameChild(room))) }
-  private balancer$roomRoot() { return Array.from(this.IO.sockets.adapter.rooms.keys()).filter(value => !value.includes(ROOM_SEPARATOR_CHILD) && !value.includes(ROOM_SEPARATOR_FANS)) }
-  private balancer$roomRootSize(room: string) { return this.room$size(room) + this.balancer$roomChildren(room)?.map(value => this.room$size(value)).reduce((a, b) => a + b, 0) || 0 }
-
-  private chat$load(room: string) { return this.CHAT$log[room]?.length ? new Promise(resolve => resolve(this.CHAT$log[room])) : ChatMessageRepository.INSTANCE.findByRoom(room, CHAT_LOG_SIZE).then(value => this.CHAT$log[room] = value || []) }
-  private chat$push(room: string, message: ChatMessage) {
-    this.CHAT$log[room] = this.CHAT$log[room] || [];
-    this.CHAT$log[room].push(message);
-    this.CHAT$log[room].length > CHAT_LOG_SIZE && this.CHAT$log[room].shift();
-
-    message = message.clone();
-    message.room = room;
-
-    this.CHAT$dirty[room] = this.CHAT$dirty[room] || [];
-    this.CHAT$dirty[room].push(message);
-  }
-
-  private room$name(room: string) { return room?.replace(new RegExp(`/${ ROOM_SEPARATOR }/g`), '') }
-  private room$nameChild(room: string) { return `${ this.room$name(room) }${ ROOM_SEPARATOR_CHILD }` }
-  private room$nameFans(room: string) { return `${ this.room$root(this.room$name(room)) }${ ROOM_SEPARATOR_FANS }` }
-  private room$nameQueue(room: string) { return `${ this.room$root(this.room$name(room)) }${ ROOM_SEPARATOR_QUEUE }` }
-
-  private room$parent(room: string) { return room?.includes(ROOM_SEPARATOR_CHILD) ? room?.slice(0, room.lastIndexOf(ROOM_SEPARATOR_CHILD)) : room }
-  private room$root(room: string) { return room?.includes(ROOM_SEPARATOR_CHILD) ? room?.slice(0, room.indexOf(ROOM_SEPARATOR_CHILD)) : room }
-  private room$size(room: string) { return this.IO.sockets.adapter.rooms.get(room)?.size || 0 }
-  private room$sockets(room: string) { return Array.from(this.IO.sockets.adapter.rooms.get(room)).map(value => this.IO.sockets.sockets.get(value)) }
+  update$queue() { this.room$list().forEach(value => value.update$queue()) }
 
   private onConnection(socket: Socket) {
-    socket.on(IOCommand.QUEUE_JOIN, () => this.onQueueJoin(socket));
-    socket.on(IOCommand.QUEUE_LEAVE, () => this.onQueueLeave(socket));
+    let user = this.IO$USERS[socket.id] = new IOUser(this.IO, socket, (socket.handshake.auth as any)?.token as string);
 
-    socket.on(IOCommand.ROOM_JOIN, (room: string) => this.onRoomJoin(socket, room));
-    socket.on(IOCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(socket, new ChatMessage(message)));
+    socket.on(IOCommand.FAN_LEAVE, () => this.onFanLeave(user));
+
+    socket.on(IOCommand.QUEUE_ENTER, () => this.onQueueEnter(user));
+    socket.on(IOCommand.QUEUE_LEAVE, () => this.onQueueLeave(user));
+
+    socket.on(IOCommand.MODERATOR_BAN, (id: string) => this.onModeratorBan(user, id));
+    socket.on(IOCommand.MODERATOR_KICK, (id: string) => this.onModeratorKick(user, id));
+
+    socket.on(IOCommand.ROOM_ENTER, (name: string, room: string) => this.onRoomEnter(user, name, IORoom.clean(room)));
+    socket.on(IOCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(user, new ChatMessage(message)));
+
+    socket.on(IOCommand.RTC_ANSWER, (value: RTCAnswer) => this.onRtcAnswer(user, value));
+    socket.on(IOCommand.RTC_CANDIDATE, (value: RTCCandidate) => this.onRtcCandidate(user, value));
+    socket.on(IOCommand.RTC_OFFER, (value: RTCOffer) => this.onRtcOffer(user, value));
+
+    socket.on(IOCommand.SPECTATOR_ENTER, (room: string) => this.onSpectatorEnter(user, IORoom.clean(room)));
   }
 
-  private onQueueJoin(socket: Socket) {
-    let room = Array.from(socket.rooms)[0];
-    if (room == undefined) return;
+  private onFanLeave(user: IOUser) { user.fanLeave() }
 
-    let roomQueue = this.room$nameQueue(room);
+  private onQueueEnter(user: IOUser) { user.queueEnter() }
+  private onQueueLeave(user: IOUser) { user.queueLeave() }
 
-    socket.join(roomQueue);
-    socket.emit(IOCommand.QUEUE_JOIN);
-    socket.emit(IOCommand.QUEUE_SIZE, this.room$size(roomQueue));
-  }
-  private onQueueLeave(socket: Socket) {
-    let room = Array.from(socket.rooms).find(value => !value.includes(ROOM_SEPARATOR_QUEUE));
-    if (room == undefined) return;
+  private onModeratorBan(user: IOUser, id: string) { user.moderatorBan(this.user$find(id)) }
+  private onModeratorKick(user: IOUser, id: string) { user.moderatorKick(this.user$find(id)) }
 
-    socket.leave(this.room$nameQueue(room));
-    socket.emit(IOCommand.QUEUE_LEAVE);
-  }
+  private onRoomEnter(user: IOUser, name: string, room: string) { user.roomEnter(name, this.room$findOrCreate(room)) }
+  private onRoomMessage(user: IOUser, message: ChatMessage) { user.roomMessage(message) }
 
-  private onRoomJoin(socket: Socket, room: string) {
-    room = this.room$name(room);
+  private onRtcAnswer(user: IOUser, value: RTCAnswer) { this.user$find(value.to)?.SOCKET.emit(IOCommand.RTC_ANSWER, { from: user.ID, sdp: value.sdp } as RTCAnswer) }
+  private onRtcCandidate(user: IOUser, value: RTCCandidate) { this.user$find(value.to)?.SOCKET.emit(IOCommand.RTC_CANDIDATE, { from: user.ID, sdpCandidate: value.sdpCandidate, sdpMid: value.sdpMid, sdpMLineIndex: value.sdpMLineIndex } as RTCCandidate) }
+  private onRtcOffer(user: IOUser, value: RTCOffer) { this.user$find(value.to)?.SOCKET.emit(IOCommand.RTC_OFFER, { from: user.ID, sdp: value.sdp } as RTCOffer) }
 
-    // Leave all rooms
-    socket.rooms.forEach(room => socket.leave(room));
+  private onSpectatorEnter(user: IOUser, room: string) { user.spectatorEnter(this.room$findOrCreate(room)) }
 
-    // Join the requested room
-    socket.join(room = this.balancer$grow(room));
+  private room$find(id: string) { return this.IO$ROOMS[id] }
+  private room$findOrCreate(id: string) { return this.IO$ROOMS[id] = this.IO$ROOMS[id] || new IORoom(id, this.IO) }
+  private room$list() { return Utils.objectValues(this.IO$ROOMS) }
 
-    // Send room size & chat log
-    this.chat$load(room).then(value => {
-      socket.emit(IOCommand.ROOM_SIZE, this.balancer$roomRootSize(this.room$root(room)));
-      socket.emit(IOCommand.ROOM_MESSAGE_LOG, value)
-    });
-  }
-  private onRoomMessage(socket: Socket, message: ChatMessage) {
-    message.time = new Date();
-
-    let room = Array.from(socket.rooms)?.filter(value => !value.includes(ROOM_SEPARATOR_FANS))?.[0];
-    if (room) {
-      this.IO.in(room).emit(IOCommand.ROOM_MESSAGE, message);
-      this.chat$push(room, message);
-    }
-  }
+  private user$find(id: string) { return this.IO$USERS[id] }
+  private user$list() { return Utils.objectValues(this.IO$USERS) }
 
 }

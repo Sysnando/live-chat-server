@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+video {
+  height: 100%;
+  width: 100%;
+
+  transform: scaleX(-1);
+}

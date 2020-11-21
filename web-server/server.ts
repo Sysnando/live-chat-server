@@ -3,7 +3,7 @@ import express from 'express';
 import * as http from "http";
 import * as cron from 'node-cron';
 import * as path from "path";
-import {ServerIO} from "./io/io-server";
+import {IOServer} from "./io/io-server";
 
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });
@@ -27,9 +27,12 @@ const HTTP = http.createServer(APP);
 
 // TODO: HTTPS w/ letsencrypt
 
-const IO = ServerIO.INSTANCE(HTTP);
+const IO = IOServer.INSTANCE(HTTP);
 
 // Scheduler
-cron.schedule('0 */2 * * * *', () => IO.balancer$update()); // Update load balancer every 2 minutes
-cron.schedule('*/30 * * * * *', () => IO.broadcast$size()); // Broadcast each rooms' capacity every 30s
-cron.schedule('0 * * * * *', () => IO.chat$persist());      // Persist chat to database every 1 minute
+cron.schedule('0 */2 * * * *', () => IO.update$chat$log()); // Every 2 minutes
+cron.schedule('0 * * * * *', () => IO.update$chat$room()); // Every minute
+cron.schedule('0 * * * * *', () => IO.update$chat$size()); // Every minute
+
+cron.schedule('*/6 * * * * *', () => IO.update$queue()); // Every 6 seconds
+

@@ -6,14 +6,21 @@
     <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [playbackUrl]="event.url" [options]="{ autoplay: true, controls: false }"></chat-window-video>
 
     <!-- Modal -->
-    <app-chat-window-modal *ngIf="modalOpen" (modalClose)="onModalClose($event)"></app-chat-window-modal>
+    <app-chat-window-modal *ngIf="modalOpen" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>
 
     <!-- Actions -->
     <div class="d-flex align-items-center justify-content-between pt-2">
       <button class="btn btn-outline-primary border-0 mr-3 p-0" style="height: 50px; width: 50px" (click)="onClickLike()">
         <fa-icon [icon]="faHeart" style="font-size: 1.50rem; line-height: 1.50rem"></fa-icon>
       </button>
-      <button class="btn btn-primary flex-grow-1" (click)="onModalOpen()">Top Fã? Entra aqui</button>
+
+      <div *ngIf="queueStatus == QueueStatus.NONE" class="d-flex align-items-center flex-grow-1">
+        <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || socketStatus != SocketStatus.CONNECTED">Top Fã? Entra aqui</button>
+      </div>
+      <div *ngIf="queueStatus == QueueStatus.WAITING" class="d-flex align-items-center flex-grow-1">
+        <div class="flex-grow-1 px-3 text-right text-white">Em espera... faltam {{ queueSize }} pessoa(s)</div>
+        <button class="btn btn-primary" (click)="onClickQueueLeave()" [disabled]="busy$queue">Desistir</button>
+      </div>
     </div>
   </div>
 
@@ -45,9 +52,9 @@
   <!-- Input -->
   <div class="card-body flex-grow-0 flex-shrink-0">
     <div class="d-flex align-items-center">
-      <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white" [(ngModel)]="chatInput" (keyup.enter)="onClickSend()"></label>
+      <label class="flex-grow-1 mb-0 mr-3"><input class="form-control text-white" [(ngModel)]="chatInput" (keyup.enter)="onClickRoomMessageSend()"></label>
       <button class="btn border-0 p-0" [disabled]="chatDisabled" [ngClass]="chatDisabled ? 'btn-outline-dark' : 'btn-outline-primary'" style="height: 48px; width: 48px"
-              (click)="onClickSend()">
+              (click)="onClickRoomMessageSend()">
         <fa-icon [icon]="faArrowRight" size="2x"></fa-icon>
       </button>
     </div>

@@ -1,12 +1,27 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {faArrowRight, faComment} from "@fortawesome/free-solid-svg-icons";
 import {faHeart} from "@fortawesome/free-regular-svg-icons";
-import {IOService, SocketStatus} from "../../shared/services/io.service";
+import {
+  FanBroadcastStatus,
+  IOService,
+  ModeratorAction,
+  QueueStatus,
+  SocketStatus
+} from "../../shared/services/io.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
 import {Event, EventService} from "../../shared/services/event.service";
 import {DatePipe} from "@angular/common";
 import {ChatMessage} from "../../../../web-shared/entity/chat-message.model";
+import {ChatWindowModalPage} from "./chat-window-modal/chat-window-modal.component";
 
 const LOG_SIZE = 100;
 
@@ -16,29 +31,40 @@ const LOG_SIZE = 100;
   styleUrls: ['./chat-window.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatWindowComponent implements OnDestroy {
+export class ChatWindowComponent implements OnDestroy, OnInit {
 
   readonly faArrowRight = faArrowRight;
   readonly faComment = faComment;
   readonly faHeart = faHeart;
 
+  readonly QueueStatus = QueueStatus;
   readonly SocketStatus = SocketStatus;
 
   event: Event;
+
+                        busy$queue: boolean;
 
                         chatInput: string;
                         chatMessages: ChatMessage[] = [];
   @ViewChild('chatLog') chatLog: ElementRef;
 
                         modalOpen: boolean;
+                        modalPage: ChatWindowModalPage;
+
+                        queueSize: number;
+                        queueStatus: QueueStatus;
 
                         roomSize: number;
 
                         socketStatus: SocketStatus;
 
-                        subscriptionMessage: Subscription;
-                        subscriptionSize: Subscription;
-                        subscriptionStatus: Subscription;
+                        subscriptionFanStatus: Subscription;
+                        subscriptionModeratorAction: Subscription;
+                        subscriptionQueueSize: Subscription;
+                        subscriptionQueueStatus: Subscription;
+                        subscriptionRoomMessage: Subscription;
+                        subscriptionRoomSize: Subscription;
+                        subscriptionSocketStatus: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -47,13 +73,18 @@ export class ChatWindowComponent implements OnDestroy {
     private eventService: EventService,
     private io: IOService,
   ) {
-    this.subscriptionMessage = io.roomMessage$.subscribe(value => this.onRoomMessage(value));
-    this.subscriptionSize = io.roomSize$.subscribe(value => this.onRoomSize(value));
-    this.subscriptionStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
+    this.io.connect();
 
-    this.activatedRoute.queryParams.subscribe(params => {
-      eventService.getEventById(params.event).subscribe(event => this.event = event);
-    })
+    this.subscriptionFanStatus = io.fanBroadcastStatus$.subscribe(value => this.onFanStatus(value));
+    this.subscriptionModeratorAction = io.moderatorActions$.subscribe(value => this.onModeratorAction(value));
+    this.subscriptionQueueSize = io.queueSize$.subscribe(value => this.onQueueSize(value));
+    this.subscriptionQueueStatus = io.queueStatus$.subscribe(value => this.onQueueStatus(value));
+    this.subscriptionRoomMessage = io.roomMessages$.subscribe(value => this.onRoomChat(value));
+    this.subscriptionRoomSize = io.roomSize$.subscribe(value => this.onRoomSize(value));
+    this.subscriptionSocketStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
+
+    // TODO: put this in a resolver?
+    eventService.getEventById(this.activatedRoute.snapshot.queryParamMap.get('event')).subscribe(event => this.event = event);
   }
 
   get chatDisabled() { return this.socketStatus != SocketStatus.CONNECTED || !this.chatInput?.trim().length }
@@ -62,15 +93,44 @@ export class ChatWindowComponent implements OnDestroy {
   chatMessage$message(message: ChatMessage) { return message?.message }
   chatMessage$time(message: ChatMessage) { return message?.time && this.date.transform(message.time, 'HH:mm') }
 
-  onClickSend() {
+  ngOnDestroy() {
+    this.subscriptionFanStatus?.unsubscribe();
+    this.subscriptionQueueSize?.unsubscribe();
+    this.subscriptionQueueStatus?.unsubscribe();
+    this.subscriptionRoomMessage?.unsubscribe();
+    this.subscriptionRoomSize?.unsubscribe();
+    this.subscriptionSocketStatus?.unsubscribe();
+  }
+
+  ngOnInit() {
+    this.io.connect();
+  }
+
+  onClickQueueEnter() {
+    this.modalPage = ChatWindowModalPage.SETUP_ACCEPT;
+    this.onModalOpen();
+  }
+  onClickQueueLeave() {
+    this.busy$queue = true;
+
+    this.io.queueLeave();
+  }
+  onClickRoomMessageSend() {
     if (this.chatDisabled) return;
 
-    this.io.roomSend(this.chatInput);
+    this.io.roomMessage(this.chatInput);
     this.chatInput = '';
     this.changeDetector.markForCheck();
   }
   onClickLike() {
-    console.log('Like ;)')
+    console.log('Like ;)') // TODO:
+  }
+
+  onFanStatus(value: FanBroadcastStatus) {
+    if (value == FanBroadcastStatus.BROADCAST_START) this.modalPage = ChatWindowModalPage.STREAM_START;
+    if (value == FanBroadcastStatus.BROADCAST_STOP)  this.modalPage = ChatWindowModalPage.STREAM_STOP;
+
+    this.onModalOpen();
   }
 
   onModalOpen() {
@@ -81,10 +141,33 @@ export class ChatWindowComponent implements OnDestroy {
     this.modalOpen = false;
     this.changeDetector.markForCheck();
 
-    // TODO:
+    this.busy$queue = success;
   }
 
-  onRoomMessage(value: ChatMessage) {
+  onModeratorAction(value: ModeratorAction) {
+    console.log('onModeratorAction', value)
+    if (value == ModeratorAction.BAN) {
+      this.modalPage = ChatWindowModalPage.STREAM_STOP_BANNED;
+      this.onModalOpen();
+    }
+    if (value == ModeratorAction.KICK) {
+      this.modalPage = ChatWindowModalPage.STREAM_STOP_KICKED;
+      this.onModalOpen();
+    }
+  }
+
+  onQueueSize(value: number) {
+    this.queueSize = value;
+    this.changeDetector.markForCheck();
+  }
+  onQueueStatus(value: QueueStatus) {
+    this.busy$queue = false;
+
+    this.queueStatus = value;
+    this.changeDetector.markForCheck();
+  }
+
+  onRoomChat(value: ChatMessage) {
     this.chatMessages.push(value);
     this.chatMessages.length > LOG_SIZE && this.chatMessages.shift();
 
@@ -100,15 +183,15 @@ export class ChatWindowComponent implements OnDestroy {
     this.socketStatus = value;
     this.changeDetector.markForCheck();
 
+    console.log('onSocketStatus', value)
     if (this.socketStatus == SocketStatus.CONNECTED) {
         this.chatMessages = [];
-        this.io.roomJoin('Sr. Banana', 'miku'); // TODO: use the query params
-    }
-  }
+        this.queueStatus = QueueStatus.NONE;
 
-  ngOnDestroy() {
-    this.subscriptionSize?.unsubscribe();
-    this.subscriptionStatus?.unsubscribe();
+        this.io.roomEnter('Sr. Banana', 'miku'); // TODO: use the query params
+    } else if (this.modalPage != ChatWindowModalPage.STREAM_STOP_BANNED) {
+        this.onModalClose(false);
+    }
   }
 
 }
