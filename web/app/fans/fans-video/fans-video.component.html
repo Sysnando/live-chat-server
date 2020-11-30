@@ -12,7 +12,8 @@
   </div>
 
   <!-- Publicidade -->
-  <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-primary" [ngClass]="{ 'd-none': id }">
+  <div class="flex-column align-items-center justify-content-center h-100 w-100 bg-primary" [ngClass]="id ? 'd-none' : 'd-flex'">
     <h1 class="mb-0 text-white">Publicidade</h1>
+    <div class="spinner-border text-white mt-3" role="status"></div>
   </div>
 </div>

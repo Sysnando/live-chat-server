@@ -2,6 +2,7 @@
   <configuration default="false" name="start-server" type="NodeJSConfigurationType" node-parameters="--inspect=9222 --require ts-node/register" path-to-js-file="web-server/server.ts" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="TS_NODE_PROJECT" value="tsconfig-web-server.json" />
+      <env name="DEBUG" value="pw:api" />
     </envs>
     <method v="2" />
   </configuration>

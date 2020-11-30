@@ -1,7 +1,7 @@
 import {Server, Socket} from "socket.io";
 import {ChatMessage, ChatMessage$JSON} from "../../web-shared/entity/chat-message.model";
 import {Utils} from "../../web-shared/utils";
-import {IORoom} from "./io-room";
+import {IORoom, ROOM_SEPARATOR} from "./io-room";
 import {IOUser} from "./io-user";
 import {IOCommand} from "../../web-shared/io";
 import * as http from "http";
@@ -39,14 +39,14 @@ export class IOServer {
     socket.on(IOCommand.MODERATOR_BAN, (id: string) => this.onModeratorBan(user, id));
     socket.on(IOCommand.MODERATOR_KICK, (id: string) => this.onModeratorKick(user, id));
 
-    socket.on(IOCommand.ROOM_ENTER, (name: string, room: string) => this.onRoomEnter(user, name, IORoom.clean(room)));
+    socket.on(IOCommand.ROOM_ENTER, (name: string, room: string) => this.onRoomEnter(user, name, this.room$name(room)));
     socket.on(IOCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(user, new ChatMessage(message)));
 
     socket.on(IOCommand.RTC_ANSWER, (value: RTCAnswer) => this.onRtcAnswer(user, value));
     socket.on(IOCommand.RTC_CANDIDATE, (value: RTCCandidate) => this.onRtcCandidate(user, value));
     socket.on(IOCommand.RTC_OFFER, (value: RTCOffer) => this.onRtcOffer(user, value));
 
-    socket.on(IOCommand.SPECTATOR_ENTER, (room: string) => this.onSpectatorEnter(user, IORoom.clean(room)));
+    socket.on(IOCommand.SPECTATOR_ENTER, (room: string) => this.onSpectatorEnter(user, this.room$name(room)));
   }
 
   private onFanLeave(user: IOUser) { user.fanLeave() }
@@ -69,6 +69,7 @@ export class IOServer {
   private room$find(id: string) { return this.IO$ROOMS[id] }
   private room$findOrCreate(id: string) { return this.IO$ROOMS[id] = this.IO$ROOMS[id] || new IORoom(id, this.IO) }
   private room$list() { return Utils.objectValues(this.IO$ROOMS) }
+  private room$name(name: string) { return name?.replace(new RegExp(`/${ ROOM_SEPARATOR }/g`), '') }
 
   private user$find(id: string) { return this.IO$USERS[id] }
   private user$list() { return Utils.objectValues(this.IO$USERS) }

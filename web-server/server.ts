@@ -19,7 +19,7 @@ const APP = express();
       // Redirect all non-file unrecognized routes to index.html, in order to support Angular html5mode routes
       APP.get(/^[^.]*$/, (req, res) => res.sendFile(path.resolve('dist/web/index.html')));
 
-const HTTP_PORT = 8080; // TODO: different port for DEV and PROD
+const HTTP_PORT = 8080; // TODO: different port for DEV and PROD?
 const HTTP = http.createServer(APP);
       HTTP.listen(HTTP_PORT);
       HTTP.on('error', error => console.error(error));

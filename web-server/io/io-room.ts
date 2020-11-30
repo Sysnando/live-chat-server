@@ -4,6 +4,7 @@ import {ChatMessageRepository} from "../repository/chat-message.repository";
 import {IOCommand} from "../../web-shared/io";
 import {Utils} from "../../web-shared/utils";
 import {IOUser} from "./io-user";
+import {IORoomRecorder} from "./io-room-recorder";
 
 export const CHAT_LOG_SIZE = 50;
 
@@ -31,9 +32,14 @@ export class IORoom {
 
   private readonly  IO: Server;
 
+  private readonly  RECORDER: IORoomRecorder;
+
   constructor(ID: string, IO: Server) {
     this.ID = ID;
     this.IO = IO;
+
+    this.RECORDER = new IORoomRecorder(this);
+    this.RECORDER.start();
   }
 
   onFanEnter(user: IOUser) {
@@ -227,7 +233,5 @@ export class IORoom {
   private size$chat() { return this.rooms().map(value => this.size(value)).reduce((a, b) => a + b, 0) || 0 }
 
   private sockets(room: string) { return Array.from(this.IO.sockets.adapter.rooms.get(room)).map(value => this.IO.sockets.sockets.get(value)) }
-
-  static clean(value: string) { return value?.replace(new RegExp(`/${ ROOM_SEPARATOR }/g`), '') }
 
 }
