@@ -18,6 +18,7 @@ export class IOService {
 
   private roomMessages = new Subject<ChatMessage>();
   private roomSize = new BehaviorSubject<number>(0);
+  private roomVideo = new Subject<string>();
 
   private rtcAnswers = new Subject<RTCAnswer>();
   private rtcCandidates = new Subject<RTCCandidate>();
@@ -41,6 +42,7 @@ export class IOService {
 
   get roomMessages$() { return this.roomMessages.asObservable() }
   get roomSize$() { return this.roomSize.asObservable() }
+  get roomVideo$() { return this.roomVideo.asObservable() }
 
   get rtcAnswers$() { return this.rtcAnswers.asObservable() }
   get rtcCandidates$() { return this.rtcCandidates.asObservable() }
@@ -71,6 +73,7 @@ export class IOService {
     this.socket.on(IOCommand.ROOM_MESSAGE, (value: ChatMessage$JSON) => this.roomMessages.next(new ChatMessage(value)));
     this.socket.on(IOCommand.ROOM_MESSAGE_LOG, (value: ChatMessage$JSON[]) => value?.length && value.forEach(value => this.roomMessages.next(new ChatMessage(value))));
     this.socket.on(IOCommand.ROOM_SIZE, (value: number) => this.roomSize.next(value));
+    this.socket.on(IOCommand.ROOM_VIDEO, (value: string) => this.roomVideo.next(value));
 
     this.socket.on(IOCommand.RTC_ANSWER, (value: RTCAnswer) => this.rtcAnswers.next(value));
     this.socket.on(IOCommand.RTC_CANDIDATE, (value: RTCCandidate) => this.rtcCandidates.next(value));

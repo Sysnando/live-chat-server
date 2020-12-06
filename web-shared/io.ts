@@ -14,6 +14,7 @@ export enum IOCommand {
   ROOM_MESSAGE = 'room.message',
   ROOM_MESSAGE_LOG = 'room.message.log',
   ROOM_SIZE = 'room.size',
+  ROOM_VIDEO = 'room.video',
 
   RTC_ANSWER = 'rtc.answer',
   RTC_CANDIDATE = 'rtc.candidate',

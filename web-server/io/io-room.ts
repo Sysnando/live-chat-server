@@ -5,6 +5,15 @@ import {IOCommand} from "../../web-shared/io";
 import {Utils} from "../../web-shared/utils";
 import {IOUser} from "./io-user";
 import {IORoomRecorder} from "./io-room-recorder";
+import {Event} from "../../web-shared/entity/event.model";
+import {EventRepository} from "../repository/event.repository";
+import {StreamRepository} from "../repository/stream.repository";
+import {Stream} from "../../web-shared/entity/stream.model";
+import {Channel} from "../../web-shared/entity/channel.model";
+import {ChannelRepository} from "../repository/channel.repository";
+import {StreamKey} from "../../web-shared/entity/stream-key.model";
+import {StreamKeyRepository} from "../repository/stream-key.repository";
+import {QUERY_PARAM_EVENT} from "../../web-shared/constants";
 
 export const CHAT_LOG_SIZE = 50;
 
@@ -32,15 +41,38 @@ export class IORoom {
 
   private readonly  IO: Server;
 
-  private readonly  RECORDER: IORoomRecorder;
+  private           EVENT: Event;
+  private           EVENT_STREAM: Stream;
+  private           EVENT_STREAM_CHANNEL: Channel;
+  private           EVENT_STREAM_KEY: StreamKey;
+
+  private           RECORDER: IORoomRecorder;
 
   constructor(ID: string, IO: Server) {
     this.ID = ID;
     this.IO = IO;
+  }
 
+  async init() {
+    if (this.EVENT) return this;
+        this.EVENT = await EventRepository.INSTANCE.findOneById(+this.ID);
+        this.EVENT_STREAM = this.EVENT && await StreamRepository.INSTANCE.findOneByEventAndType(this.EVENT.id, "TOP_FAN");
+        this.EVENT_STREAM_CHANNEL = this.EVENT && this.EVENT_STREAM && await ChannelRepository.INSTANCE.findOneById(this.EVENT_STREAM.channelId);
+        this.EVENT_STREAM_KEY = this.EVENT && this.EVENT_STREAM && await StreamKeyRepository.INSTANCE.findOneById(this.EVENT_STREAM.streamKeyId);
+
+    if (this.EVENT == undefined)
+        throw new Error('Invalid Event ID');
+
+    console.log(`Event ${ this.EVENT.id } initialized`);
     this.RECORDER = new IORoomRecorder(this);
     this.RECORDER.start();
+
+    return this;
   }
+
+  get urlFans() { return this.EVENT_STREAM_CHANNEL.playbackUrl }
+  get urlIngest() { debugger; return `rtmps://${ this.EVENT_STREAM_CHANNEL.ingestEndpoint }:443/app/${ this.EVENT_STREAM_KEY.value }` }
+  get urlSpectator() { return `fans/spectator?${ QUERY_PARAM_EVENT }=${ this.EVENT.id }` }
 
   onFanEnter(user: IOUser) {
     if (this.BANNED[user?.ADDRESS] && user.SOCKET.disconnect(true)) return;
@@ -89,8 +121,9 @@ export class IORoom {
     // Load chat log
     this.chat$log$load(room).then(value => {
       user.SOCKET.join(room);
-      user.SOCKET.emit(IOCommand.ROOM_SIZE, this.size$chat());
       user.SOCKET.emit(IOCommand.ROOM_MESSAGE_LOG, value)
+      user.SOCKET.emit(IOCommand.ROOM_SIZE, this.size$chat());
+      user.SOCKET.emit(IOCommand.ROOM_VIDEO, this.urlFans);
     })
   }
   onRoomLeave(user: IOUser) {

@@ -3,7 +3,7 @@
   <!-- Top Fans -->
   <div class="card-body flex-grow-0 border-bottom border-dark">
     <!-- Video -->
-    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [playbackUrl]="event.url" [options]="{ autoplay: true, controls: false }"></chat-window-video>
+    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [src]="roomVideo" [options]="{ autoplay: true, controls: false, muted: true }"></chat-window-video>
 
     <!-- Modal -->
     <app-chat-window-modal *ngIf="modalOpen" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>

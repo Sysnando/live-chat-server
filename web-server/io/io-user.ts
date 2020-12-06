@@ -22,6 +22,8 @@ export class IOUser {
     if (TOKEN == 'moderator')   this.ROLES = [IOUserRole.ROLE_FANS_MODERATOR];
     if (TOKEN == 'spectator')   this.ROLES = [IOUserRole.ROLE_FANS_SPECTATOR];
 
+    console.log('IOUser', TOKEN, this.ADDRESS);
+
     this.SOCKET = SOCKET;
     this.SOCKET.on('disconnect', () => this.roomLeave());
   }

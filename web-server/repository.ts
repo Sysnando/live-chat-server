@@ -1,18 +1,21 @@
-import { Pool, QueryResult, PoolClient } from 'pg';
+import {Pool, PoolClient, QueryResult} from 'pg';
 import {Entity, Entity$ID, Entity$JSON, Entity$ROW} from "../web-shared/entity";
 import {Utils} from "../web-shared/utils";
+import {ENV, Environment} from "./environment";
 
 export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extends Entity$ID, JSON extends Entity$JSON<ID>, ROW extends Entity$ROW<ID>> {
 
+  /*
   private static INITIALIZED = {} as { [key: string]: boolean };
+   */
 
   private static POOL$: Pool;
   private static get POOL(): Pool {
       return this.POOL$ = this.POOL$ || new Pool({
-          database: 'ushowme', // TODO: add PROD configuration
-          host: 'localhost', // TODO: add PROD configuration
-          user: 'ushowme', // TODO: add PROD configuration
-          password: 'ushowme', // TODO: add PROD configuration
+          database: 'ushowme',
+          host: ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'localhost',
+          user: ENV == Environment.PROD ? 'ushowme' : 'ushowme',
+          password: ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'ushowme',
           max: 12,
           min: 4,
       });
@@ -49,7 +52,7 @@ export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extend
     return this.RUN(`SELECT * FROM ${ this.COLLECTION() } WHERE ${ condition } LIMIT 1`, params).then(value => value.rows.map(value => this.factory.fromROW(value))?.[0]);
   }
   async findOneById(id: ID): Promise<ENTITY> {
-    return this.findOne('id=?', [id]);
+    return this.findOne('id=$1', [id]);
   }
 
   async save(entity: ENTITY): Promise<ENTITY> {
@@ -124,5 +127,5 @@ export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extend
 }
 
 type Column<ID extends Entity$ID, ROW extends Entity$ROW<ID>> = { index?: boolean, name: keyof ROW, null?: boolean, primary?: boolean, type: ColumnType }
-type ColumnType = 'INTEGER' | 'TEXT' | 'TIMESTAMP';
+type ColumnType = 'BOOLEAN' | 'INTEGER' | 'TEXT' | 'TIMESTAMP';
 type Schema<ID extends Entity$ID, ROW extends Entity$ROW<ID>> = { [key in keyof ROW]: Omit<Column<ID, ROW>, 'name'> }

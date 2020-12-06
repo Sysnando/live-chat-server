@@ -2,8 +2,8 @@
      [ngClass]="{ 'card border border-primary m-1': card }">
   <!-- Video -->
   <div class="h-100 w-100 position-absolute" [ngClass]="{ 'd-none': !id }">
-    <video class="position-absolute" style="object-fit: fill" #videoBackground></video>
-    <video class="position-absolute" style="backdrop-filter: blur(12px)" #video></video>
+    <video autoplay muted class="position-absolute" style="object-fit: fill" #videoBackground></video>
+    <video autoplay muted class="position-absolute" style="backdrop-filter: blur(12px)" #video></video>
 
     <div class="position-absolute d-flex justify-content-center p-3 w-100" style="bottom: 0" *ngIf="moderator">
       <button class="btn btn-danger rounded-circle p-0 mr-3" style="height: 48px; width: 48px" (click)="onClickBan()" [disabled]="busy"><fa-icon [icon]="faBan" style="font-size: 150%; line-height: 0"></fa-icon></button>

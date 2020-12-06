@@ -4,6 +4,7 @@ import * as http from "http";
 import * as cron from 'node-cron';
 import * as path from "path";
 import {IOServer} from "./io/io-server";
+import {ENV, Environment} from "./environment";
 
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });
@@ -19,13 +20,11 @@ const APP = express();
       // Redirect all non-file unrecognized routes to index.html, in order to support Angular html5mode routes
       APP.get(/^[^.]*$/, (req, res) => res.sendFile(path.resolve('dist/web/index.html')));
 
-const HTTP_PORT = 8080; // TODO: different port for DEV and PROD?
+const HTTP_PORT = ENV == Environment.PROD ? 80 : 8080;
 const HTTP = http.createServer(APP);
       HTTP.listen(HTTP_PORT);
       HTTP.on('error', error => console.error(error));
       HTTP.on('listening', () => console.log(`HTTP listening on ${ HTTP_PORT }`));
-
-// TODO: HTTPS w/ letsencrypt
 
 const IO = IOServer.INSTANCE(HTTP);
 

@@ -1,8 +1,2 @@
-<!-- Click to activate (otherwise chrome prevents the video from playing) -->
-<div class="d-flex align-items-center justify-content-center bg-dark position-absolute" style="height: 100%; width: 100%; z-index: 1"
-     (click)="active = true" *ngIf="!active" id="activate">
-  <h1 class="text-white">Click to activate</h1>
-</div>
-
-<app-fans-video *ngFor="let peer of peers; index as i; trackBy: trackByValue" [card]="false" [id]="peer" style="height: 100vh; width: 100vw"
+<app-fans-video *ngFor="let id of peers; index as i; trackBy: trackByValue" [card]="false" [id]="id" style="height: 100vh; width: 100vw"
                 [ngClass]="{ 'd-none': i > 0 }"></app-fans-video>

@@ -58,14 +58,10 @@ export class FansVideoComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   update() {
-    if (this.video && this.video.nativeElement && this.id) {
+    if (this.video && this.video.nativeElement && this.id)
         this.video.nativeElement.srcObject = this.rtc.stream(this.id);
-        this.video.nativeElement.play();
-    }
-    if (this.videoBackground && this.videoBackground.nativeElement && this.id) {
+    if (this.videoBackground && this.videoBackground.nativeElement && this.id)
         this.videoBackground.nativeElement.srcObject = this.rtc.stream(this.id);
-        this.videoBackground.nativeElement.play();
-    }
 
     this.busy = false;
     this.changeDetector.markForCheck();

@@ -16,3 +16,4 @@ export abstract class Entity<ID extends Entity$ID, JSON extends Entity$JSON<ID>,
 export type Entity$ID = object | number | string | void;
 export type Entity$JSON<ID extends Entity$ID> = { id?: ID }
 export type Entity$ROW<ID extends Entity$ID> = ID extends object ? ID : { id?: ID }
+

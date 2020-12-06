@@ -2,6 +2,9 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '
 import {IOService, SocketStatus} from "../../shared/services/io.service";
 import {Subscription} from "rxjs";
 import {RTCService} from "../../shared/services/rtc.service";
+import {QUERY_PARAM_EVENT, QUERY_PARAM_NAME} from "../../../../web-shared/constants";
+import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-fans-spectator',
@@ -11,20 +14,22 @@ import {RTCService} from "../../shared/services/rtc.service";
 })
 export class FansSpectatorComponent implements OnDestroy {
 
-  active: boolean;
+              paramEvent: string;
 
-  peers: string[];
+              peers: string[];
 
-  private subscriptionPeers: Subscription;
-  private subscriptionSocketStatus: Subscription;
+  private     subscriptionPeers: Subscription;
+  private     subscriptionSocketStatus: Subscription;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
     private io: IOService,
+    private route: ActivatedRoute,
     private rtc: RTCService,
   ) {
-    this.io.connect('spectator'); // TODO: use hard-coded token with a spectator role or something, no expiration. on the server only let localhost users connect with it
-    this.rtc.reset();
+    this.paramEvent = route.snapshot.queryParamMap.get(QUERY_PARAM_EVENT);
+    this.paramEvent && this.io.connect('spectator'); // TODO: use hard-coded token with a spectator role or something, no expiration. on the server only let localhost users connect with it
+    this.paramEvent && this.rtc.reset();
 
     this.subscriptionPeers = this.io.rtcPeers$.subscribe(value => this.onPeers(value));
     this.subscriptionSocketStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
@@ -41,7 +46,7 @@ export class FansSpectatorComponent implements OnDestroy {
   }
   onSocketStatus(value: SocketStatus) {
     if (value == SocketStatus.CONNECTED)
-      this.io.fanEnter('miku'); // TODO: use the query params
+      this.io.fanEnter(this.paramEvent);
   }
 
   trackByValue(index: number, value: string) { return value }

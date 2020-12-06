@@ -88,6 +88,7 @@ export class RTCService {
           to: peer,
         });
         connection.ontrack = event => {
+          console.log('onTrack', event.streams[0]);
           this.peerStreams[peer] = event.streams[0];
           this.UPDATE.next(true);
         }

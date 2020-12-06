@@ -57,7 +57,7 @@ export class IOServer {
   private onModeratorBan(user: IOUser, id: string) { user.moderatorBan(this.user$find(id)) }
   private onModeratorKick(user: IOUser, id: string) { user.moderatorKick(this.user$find(id)) }
 
-  private onRoomEnter(user: IOUser, name: string, room: string) { user.roomEnter(name, this.room$findOrCreate(room)) }
+  private onRoomEnter(user: IOUser, name: string, room: string) { this.room$findOrCreate(room).init().then(value => user.roomEnter(name, value)) }
   private onRoomMessage(user: IOUser, message: ChatMessage) { user.roomMessage(message) }
 
   private onRtcAnswer(user: IOUser, value: RTCAnswer) { this.user$find(value.to)?.SOCKET.emit(IOCommand.RTC_ANSWER, { from: user.ID, sdp: value.sdp } as RTCAnswer) }

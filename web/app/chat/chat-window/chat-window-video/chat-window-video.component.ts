@@ -1,50 +1,57 @@
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy, OnChanges, SimpleChanges, AfterViewInit} from '@angular/core';
 import videojs from 'video.js';
 
-import { registerIVSQualityPlugin, registerIVSTech, VideoJSEvents, VideoJSIVSTech, VideoJSQualityPlugin } from 'amazon-ivs-player';
+import { registerIVSQualityPlugin, registerIVSTech, VideoJSIVSTech, VideoJSQualityPlugin } from 'amazon-ivs-player';
 
 @Component({
   selector: 'chat-window-video',
   templateUrl: './chat-window-video.component.html',
   styleUrls: ['./chat-window-video.component.scss'],
 })
-export class ChatWindowVideoComponent implements OnInit, OnDestroy {
-  @Input() playbackUrl: string;
-  @Input() options: {
-    autoplay: boolean;
-    controls: boolean;
-    techOrder?: ['AmazonIVS']
-  };
-  player?: videojs.Player;
+export class ChatWindowVideoComponent implements AfterViewInit, OnChanges, OnDestroy {
+
+  @Input() src: string;
+  @Input() options: ChatWindowVideoOptions;
+
+  player: videojs.Player;
 
   constructor() {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
 
+    registerIVSQualityPlugin(videojs);
     registerIVSTech(videojs, {
       wasmBinary: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.js',
       wasmWorker: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.wasm',
     });
 
-    const player = videojs(
-      'ushowme-player', this.options, function onPlayerReady() { console.warn('Player is ready to use');}
-    ) as videojs.Player & VideoJSIVSTech & VideoJSQualityPlugin;
+    this.player = videojs('ushowme-player', this.options, () => this.onPlayerReady()) as videojs.Player & VideoJSIVSTech & VideoJSQualityPlugin;
+    this.onPlayerSrc();
+  }
 
-    registerIVSQualityPlugin(videojs);
-
-    //player.enableIVSQualityPlugin();
-
-    player.src({
-      src: this.playbackUrl,
-      type: 'application/x-mpegURL',
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.src)
+        this.onPlayerSrc();
   }
 
   ngOnDestroy() {
-    // destroy player
-    if (this.player) {
-      this.player.dispose();
-    }
+    this.player?.dispose();
   }
 
+  onPlayerReady() {
+    console.log('onPlayerReady')
+    this.player?.play();
+  }
+  onPlayerSrc() {
+    if (this.player && this.src)
+        this.player.src({ src: this.src, type: 'application/x-mpegURL' });
+  }
+
+}
+
+interface ChatWindowVideoOptions {
+  autoplay: boolean;
+  controls: boolean;
+  muted: boolean;
+  techOrder?: ['AmazonIVS'];
 }

@@ -18,10 +18,11 @@ import {
 } from "../../shared/services/io.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
-import {Event, EventService} from "../../shared/services/event.service";
 import {DatePipe} from "@angular/common";
 import {ChatMessage} from "../../../../web-shared/entity/chat-message.model";
 import {ChatWindowModalPage} from "./chat-window-modal/chat-window-modal.component";
+import {QUERY_PARAM_EVENT, QUERY_PARAM_NAME} from "../../../../web-shared/constants";
+import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 
 const LOG_SIZE = 100;
 
@@ -40,8 +41,6 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
   readonly QueueStatus = QueueStatus;
   readonly SocketStatus = SocketStatus;
 
-  event: Event;
-
                         busy$queue: boolean;
 
                         chatInput: string;
@@ -51,29 +50,35 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
                         modalOpen: boolean;
                         modalPage: ChatWindowModalPage;
 
+                        paramEvent: string;
+                        paramName: string;
+
                         queueSize: number;
                         queueStatus: QueueStatus;
 
                         roomSize: number;
+                        roomVideo: string;
 
                         socketStatus: SocketStatus;
 
-                        subscriptionFanStatus: Subscription;
-                        subscriptionModeratorAction: Subscription;
-                        subscriptionQueueSize: Subscription;
-                        subscriptionQueueStatus: Subscription;
-                        subscriptionRoomMessage: Subscription;
-                        subscriptionRoomSize: Subscription;
-                        subscriptionSocketStatus: Subscription;
+  private               subscriptionFanStatus: Subscription;
+  private               subscriptionModeratorAction: Subscription;
+  private               subscriptionQueueSize: Subscription;
+  private               subscriptionQueueStatus: Subscription;
+  private               subscriptionRoomMessage: Subscription;
+  private               subscriptionRoomSize: Subscription;
+  private               subscriptionRoomVideo: Subscription;
+  private               subscriptionSocketStatus: Subscription;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private date: DatePipe,
-    private eventService: EventService,
     private io: IOService,
+    private route: ActivatedRoute,
   ) {
-    this.io.connect();
+    this.paramName = route.snapshot.queryParamMap.get(QUERY_PARAM_NAME) || uniqueNamesGenerator({ dictionaries: [animals, adjectives, colors], separator: ' ', style: 'capital' });
+    this.paramEvent = route.snapshot.queryParamMap.get(QUERY_PARAM_EVENT);
+    this.paramEvent && this.io.connect();
 
     this.subscriptionFanStatus = io.fanBroadcastStatus$.subscribe(value => this.onFanStatus(value));
     this.subscriptionModeratorAction = io.moderatorActions$.subscribe(value => this.onModeratorAction(value));
@@ -81,10 +86,8 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.subscriptionQueueStatus = io.queueStatus$.subscribe(value => this.onQueueStatus(value));
     this.subscriptionRoomMessage = io.roomMessages$.subscribe(value => this.onRoomChat(value));
     this.subscriptionRoomSize = io.roomSize$.subscribe(value => this.onRoomSize(value));
+    this.subscriptionRoomVideo = io.roomVideo$.subscribe(value => this.onRoomVideo(value));
     this.subscriptionSocketStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
-
-    // TODO: put this in a resolver?
-    eventService.getEventById(this.activatedRoute.snapshot.queryParamMap.get('event')).subscribe(event => this.event = event);
   }
 
   get chatDisabled() { return this.socketStatus != SocketStatus.CONNECTED || !this.chatInput?.trim().length }
@@ -178,6 +181,10 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.roomSize = value;
     this.changeDetector.markForCheck();
   }
+  onRoomVideo(value: string) {
+    this.roomVideo = value;
+    this.changeDetector.markForCheck();
+  }
 
   onSocketStatus(value: SocketStatus) {
     this.socketStatus = value;
@@ -188,7 +195,7 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
         this.chatMessages = [];
         this.queueStatus = QueueStatus.NONE;
 
-        this.io.roomEnter('Sr. Banana', 'miku'); // TODO: use the query params
+        this.io.roomEnter(this.paramName, this.paramEvent);
     } else if (this.modalPage != ChatWindowModalPage.STREAM_STOP_BANNED) {
         this.onModalClose(false);
     }
