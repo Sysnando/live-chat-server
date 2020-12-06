@@ -28,7 +28,7 @@ export class FansModeratorComponent implements OnDestroy {
     private rtc: RTCService,
   ) {
     this.paramEvent = route.snapshot.queryParamMap.get(QUERY_PARAM_EVENT);
-    this.paramEvent && this.io.connect('moderator'); // TODO: use hard-coded token with a spectator role or something, no expiration. on the server only let localhost users connect with it
+    this.paramEvent && this.io.connect();
     this.paramEvent && this.rtc.reset();
 
     this.subscriptionPeers = this.io.rtcPeers$.subscribe(value => this.onPeers(value));

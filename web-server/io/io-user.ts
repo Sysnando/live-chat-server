@@ -1,6 +1,8 @@
 import {Server, Socket} from "socket.io";
 import {ChatMessage} from "../../web-shared/entity/chat-message.model";
 import {IORoom} from "./io-room";
+import jwt from 'jsonwebtoken';
+import {JWT_SECRET} from "../../web-shared/constants";
 
 export class IOUser {
 
@@ -18,11 +20,14 @@ export class IOUser {
     this.ID = SOCKET.id;
     this.IO = IO;
 
-    // TODO: parse JWT token's name & roles
-    if (TOKEN == 'moderator')   this.ROLES = [IOUserRole.ROLE_FANS_MODERATOR];
-    if (TOKEN == 'spectator')   this.ROLES = [IOUserRole.ROLE_FANS_SPECTATOR];
+    try {
+      let TOKEN_DECODED = TOKEN && jwt.verify(TOKEN, JWT_SECRET) as { sub: string, auth: string, exp: number };
 
-    console.log('IOUser', TOKEN, this.ADDRESS);
+      // Decode ROLES
+      // Limit ROLE_SPECTATOR to localhost only
+      this.ROLES = TOKEN_DECODED?.auth?.split(',') as IOUserRole[];
+      this.ROLES.includes(IOUserRole.ROLE_SPECTATOR) && this.ADDRESS != '1' && this.ROLES.splice(this.ROLES.indexOf(IOUserRole.ROLE_SPECTATOR, 1));
+    } catch (error) {}
 
     this.SOCKET = SOCKET;
     this.SOCKET.on('disconnect', () => this.roomLeave());
@@ -33,11 +38,11 @@ export class IOUser {
   isRole(role: IOUserRole) { return this.ROLES?.length && this.ROLES.includes(role) }
 
   moderatorBan(user: IOUser) {
-    if (this.isRole(IOUserRole.ROLE_FANS_MODERATOR) && user)
+    if (this.isRole(IOUserRole.ROLE_MODERATOR) && user)
         this.ROOM?.onModeratorBan(user);
   }
   moderatorKick(user: IOUser) {
-    if (this.isRole(IOUserRole.ROLE_FANS_MODERATOR) && user)
+    if (this.isRole(IOUserRole.ROLE_MODERATOR) && user)
         this.ROOM?.onModeratorKick(user);
   }
 
@@ -71,7 +76,7 @@ export class IOUser {
 
   spectatorEnter(room: IORoom) {
     if (room.ID == this.ROOM?.ID) return;
-    if (this.isRole(IOUserRole.ROLE_FANS_MODERATOR) != true && this.isRole(IOUserRole.ROLE_FANS_SPECTATOR) != true) return;
+    if (this.isRole(IOUserRole.ROLE_MODERATOR) != true && this.isRole(IOUserRole.ROLE_SPECTATOR) != true) return;
 
     // Leave previous room
     this.roomLeave();
@@ -85,6 +90,6 @@ export class IOUser {
 }
 
 export enum IOUserRole {
-  ROLE_FANS_MODERATOR,
-  ROLE_FANS_SPECTATOR,
+  ROLE_MODERATOR = 'ROLE_MODERATOR',
+  ROLE_SPECTATOR = 'ROLE_SPECTATOR',
 }

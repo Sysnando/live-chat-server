@@ -5,6 +5,7 @@ import {RTCService} from "../../shared/services/rtc.service";
 import {QUERY_PARAM_EVENT, QUERY_PARAM_NAME} from "../../../../web-shared/constants";
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {ActivatedRoute} from "@angular/router";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-fans-spectator',
@@ -28,7 +29,7 @@ export class FansSpectatorComponent implements OnDestroy {
     private rtc: RTCService,
   ) {
     this.paramEvent = route.snapshot.queryParamMap.get(QUERY_PARAM_EVENT);
-    this.paramEvent && this.io.connect('spectator'); // TODO: use hard-coded token with a spectator role or something, no expiration. on the server only let localhost users connect with it
+    this.paramEvent && this.io.connect(environment.TOKEN_SPECTATOR);
     this.paramEvent && this.rtc.reset();
 
     this.subscriptionPeers = this.io.rtcPeers$.subscribe(value => this.onPeers(value));
