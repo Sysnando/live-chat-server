@@ -26,7 +26,7 @@ export class IOUser {
       // Decode ROLES
       // Limit ROLE_SPECTATOR to localhost only
       this.ROLES = TOKEN_DECODED?.auth?.split(',') as IOUserRole[];
-      this.ROLES.includes(IOUserRole.ROLE_SPECTATOR) && this.ADDRESS != '1' && this.ROLES.splice(this.ROLES.indexOf(IOUserRole.ROLE_SPECTATOR, 1));
+      this.ROLES.includes(IOUserRole.ROLE_SPECTATOR) && this.ADDRESS != '1' && (this.ROLES = this.ROLES.filter(value => value != IOUserRole.ROLE_SPECTATOR));
     } catch (error) {}
 
     this.SOCKET = SOCKET;

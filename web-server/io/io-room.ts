@@ -63,7 +63,7 @@ export class IORoom {
     if (this.EVENT == undefined)
         throw new Error('Invalid Event ID');
 
-    console.log(`Event ${ this.EVENT.id } initialized`);
+    console.log(`Room for Event ${ this.EVENT.id } initialized`);
     this.RECORDER = new IORoomRecorder(this);
     this.RECORDER.start();
 
@@ -71,7 +71,7 @@ export class IORoom {
   }
 
   get urlFans() { return this.EVENT_STREAM_CHANNEL.playbackUrl }
-  get urlIngest() { debugger; return `rtmps://${ this.EVENT_STREAM_CHANNEL.ingestEndpoint }:443/app/${ this.EVENT_STREAM_KEY.value }` }
+  get urlIngest() { return `rtmps://${ this.EVENT_STREAM_CHANNEL.ingestEndpoint }:443/app/${ this.EVENT_STREAM_KEY.value }` }
   get urlSpectator() { return `fans/spectator?${ QUERY_PARAM_EVENT }=${ this.EVENT.id }` }
 
   onFanEnter(user: IOUser) {

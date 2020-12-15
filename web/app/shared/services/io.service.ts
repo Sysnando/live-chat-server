@@ -4,6 +4,7 @@ import {BehaviorSubject, Subject} from "rxjs";
 import {IOCommand} from "../../../../web-shared/io";
 import {ChatMessage, ChatMessage$JSON} from "../../../../web-shared/entity/chat-message.model";
 import {RTCAnswer, RTCCandidate, RTCOffer} from "../../../../web-shared/rtc";
+import {CookieService} from "ngx-cookie-service";
 
 @Injectable({ providedIn: 'root' })
 export class IOService {
@@ -28,7 +29,7 @@ export class IOService {
   private socket: Socket;
   private socketStatus = new BehaviorSubject<SocketStatus>(SocketStatus.CONNECTING);
 
-  constructor() {}
+  constructor(private cookie: CookieService) {}
 
   get ID() { return this.socket.id }
 
@@ -51,7 +52,7 @@ export class IOService {
 
   get socketStatus$() { return this.socketStatus.asObservable() }
 
-  connect(token: string = window.localStorage.getItem('jhi-authenticationtoken')) {
+  connect(token: string = this.cookie.get('authenticationToken')) {
     this.socket?.disconnect();
     this.socket = undefined;
 
