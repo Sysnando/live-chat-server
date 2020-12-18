@@ -10,9 +10,11 @@
 
     <!-- Actions -->
     <div class="d-flex align-items-center justify-content-between pt-2">
+      <!--
       <button class="btn btn-outline-primary border-0 mr-3 p-0" style="height: 50px; width: 50px" (click)="onClickLike()">
         <fa-icon [icon]="faHeart" style="font-size: 1.50rem; line-height: 1.50rem"></fa-icon>
       </button>
+      -->
 
       <div *ngIf="queueStatus == QueueStatus.NONE" class="d-flex align-items-center flex-grow-1">
         <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || socketStatus != SocketStatus.CONNECTED">Top Fã? Entra aqui</button>

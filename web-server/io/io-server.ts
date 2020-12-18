@@ -29,7 +29,7 @@ export class IOServer {
   update$queue() { this.room$list().forEach(value => value.update$queue()) }
 
   private onConnection(socket: Socket) {
-    let user = this.IO$USERS[socket.id] = new IOUser(this.IO, socket, (socket.handshake.auth as any)?.token as string);
+    let user = this.IO$USERS[socket.id] = new IOUser(this.IO, socket);
 
     socket.on(IOCommand.FAN_LEAVE, () => this.onFanLeave(user));
 

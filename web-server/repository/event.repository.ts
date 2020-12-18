@@ -10,24 +10,15 @@ export class EventRepository extends Repository<Event, Event$ID, Event$JSON, Eve
     super('event', Event, {
       id: { type: 'INTEGER', primary: true },
 
-      event_date: { type: 'TIMESTAMP' },
-      duration: { type: 'INTEGER' },
-
       title: { type: 'TEXT' },
       description: { type: 'TEXT' },
 
-      accept_donation: { type: 'BOOLEAN' },
-      accept_chat: { type: 'BOOLEAN' },
-      paid: { type: 'BOOLEAN' },
+      has_chat: { type: 'BOOLEAN' },
+      has_donation: { type: 'BOOLEAN' },
+      has_topfan: { type: 'BOOLEAN' },
 
-      twitter: { type: 'TEXT' },
-      facebook: { type: 'TEXT' },
-      youtube: { type: 'TEXT' },
-
-      highlight_img: { type: 'TEXT' },
-      highlight_img_content_type: { type: 'TEXT' },
-
-      artist_id: { type: 'INTEGER' },
+      top_fans_queue_size: { type: 'INTEGER' },
+      top_fans_timer: { type: 'INTEGER' },
     });
   }
 

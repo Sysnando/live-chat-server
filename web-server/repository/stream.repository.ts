@@ -18,7 +18,7 @@ export class StreamRepository extends Repository<Stream, Stream$ID, Stream$JSON,
     });
   }
 
-  findOneByEventAndType(event: number, type: Stream$Type) {
+  findOneByEventAndType(event: string, type: Stream$Type) {
     return this.find('event_id=$1 AND type=$2', [event, type]).then(value => value?.[0])
   }
 

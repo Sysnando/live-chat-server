@@ -15,25 +15,24 @@ export class IOUser {
   private           ROOM: IORoom;
   private readonly  ROLES: IOUserRole[];
 
-  constructor(IO: Server, SOCKET: Socket, TOKEN: string) {
+  constructor(IO: Server, SOCKET: Socket) {
     this.ADDRESS = SOCKET.handshake.address.slice(SOCKET.handshake.address.lastIndexOf(':') + 1);
     this.ID = SOCKET.id;
     this.IO = IO;
 
     try {
-      let TOKEN_DECODED = TOKEN && jwt.verify(TOKEN, JWT_SECRET) as { sub: string, auth: string, exp: number };
+      let TOKEN = (SOCKET.handshake.auth as any)?.token as string;
+      let TOKEN_DECODED = TOKEN && jwt.verify(TOKEN, Buffer.from(JWT_SECRET, 'base64')) as { sub: string, auth: string, exp: number };
 
       // Decode ROLES
-      // Limit ROLE_SPECTATOR to localhost only
       this.ROLES = TOKEN_DECODED?.auth?.split(',') as IOUserRole[];
-      this.ROLES.includes(IOUserRole.ROLE_SPECTATOR) && this.ADDRESS != '1' && (this.ROLES = this.ROLES.filter(value => value != IOUserRole.ROLE_SPECTATOR));
-    } catch (error) {}
+    } catch (error) { }
 
     this.SOCKET = SOCKET;
     this.SOCKET.on('disconnect', () => this.roomLeave());
   }
 
-  fanLeave() { this.ROOM.onFanLeave(this) }
+  fanLeave() { this.ROOM?.onFanLeave(this) }
 
   isRole(role: IOUserRole) { return this.ROLES?.length && this.ROLES.includes(role) }
 
@@ -46,8 +45,8 @@ export class IOUser {
         this.ROOM?.onModeratorKick(user);
   }
 
-  queueEnter() { this.ROOM.onQueueEnter(this) }
-  queueLeave() { this.ROOM.onQueueLeave(this) }
+  queueEnter() { this.ROOM?.onQueueEnter(this) }
+  queueLeave() { this.ROOM?.onQueueLeave(this) }
 
   roomEnter(name: string, room: IORoom) {
     if (room.ID == this.ROOM?.ID) return;
@@ -59,13 +58,13 @@ export class IOUser {
     this.ROOM = room;
 
     // Join the requested room
-    this.ROOM.onRoomEnter(this);
+    this.ROOM?.onRoomEnter(this);
   }
   roomMessage(message: ChatMessage) {
     message.from = this.NAME;
     message.time = new Date();
 
-    this.ROOM.onRoomMessage(this, message);
+    this.ROOM?.onRoomMessage(this, message);
   }
   roomLeave() {
     this.ROOM?.onFanLeave(this);

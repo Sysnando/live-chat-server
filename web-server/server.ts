@@ -33,5 +33,5 @@ cron.schedule('0 */2 * * * *', () => IO.update$chat$log()); // Every 2 minutes
 cron.schedule('0 * * * * *', () => IO.update$chat$room()); // Every minute
 cron.schedule('0 * * * * *', () => IO.update$chat$size()); // Every minute
 
-cron.schedule('*/6 * * * * *', () => IO.update$queue()); // Every 6 seconds
+cron.schedule('* * * * * *', () => IO.update$queue()); // Every second
 

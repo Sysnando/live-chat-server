@@ -17,9 +17,6 @@ import {QUERY_PARAM_EVENT} from "../../web-shared/constants";
 
 export const CHAT_LOG_SIZE = 50;
 
-export const FAN_DURATION = 6;
-export const FAN_SIZE = 10 + 1;
-
 export const ROOM_SEPARATOR = '$';
 export const ROOM_SEPARATOR_CHAT = '$c';
 
@@ -35,7 +32,6 @@ export class IORoom {
   private readonly  CHAT$dirty: { [key: string]: ChatMessage[] } = {};
   private readonly  CHAT$log: { [key: string]: ChatMessage[] } = {};
 
-  private readonly  FAN$room: IOUser[] = new Array(FAN_SIZE).fill(undefined);
   private readonly  FAN$queue: IOUser[] = [];
   private readonly  FAN$spectator: IOUser[] = [];
 
@@ -46,6 +42,11 @@ export class IORoom {
   private           EVENT_STREAM_CHANNEL: Channel;
   private           EVENT_STREAM_KEY: StreamKey;
 
+  private           FAN$room: IOUser[];
+  private           FAN$room$duration: number;
+  private           FAN$room$size: number;
+  private           FAN$room$tick: number;
+
   private           RECORDER: IORoomRecorder;
 
   constructor(ID: string, IO: Server) {
@@ -55,15 +56,20 @@ export class IORoom {
 
   async init() {
     if (this.EVENT) return this;
-        this.EVENT = await EventRepository.INSTANCE.findOneById(+this.ID);
+        this.EVENT = await EventRepository.INSTANCE.findOneById(this.ID);
         this.EVENT_STREAM = this.EVENT && await StreamRepository.INSTANCE.findOneByEventAndType(this.EVENT.id, "TOP_FAN");
         this.EVENT_STREAM_CHANNEL = this.EVENT && this.EVENT_STREAM && await ChannelRepository.INSTANCE.findOneById(this.EVENT_STREAM.channelId);
         this.EVENT_STREAM_KEY = this.EVENT && this.EVENT_STREAM && await StreamKeyRepository.INSTANCE.findOneById(this.EVENT_STREAM.streamKeyId);
 
     if (this.EVENT == undefined)
-        throw new Error('Invalid Event ID');
+        throw new Error(`Invalid Event ID: ${ this.ID }`);
 
-    console.log(`Room for Event ${ this.EVENT.id } initialized`);
+    this.FAN$room$duration = this.EVENT.topFansTimer;
+    this.FAN$room$size = this.EVENT.topFansQueueSize + 1;
+    this.FAN$room$tick = 0;
+    this.FAN$room = new Array(this.FAN$room$size).fill(undefined);
+
+    console.log(`Room for Event ${ this.EVENT.id } initialized. Duration: ${ this.FAN$room$duration }, Size: ${ this.FAN$room$size }`);
     this.RECORDER = new IORoomRecorder(this);
     this.RECORDER.start();
 
@@ -162,12 +168,15 @@ export class IORoom {
   }
 
   update$queue() {
+    if (this.FAN$room$tick = this.FAN$room$tick - 1) return;
+        this.FAN$room$tick = this.FAN$room$duration;
+
     let user;
 
     // Take first user from queue
     user = this.FAN$queue.shift();
     user?.SOCKET.emit(IOCommand.QUEUE_LEAVE);
-    user?.SOCKET.emit(IOCommand.FAN_BROADCAST_START, FAN_DURATION * (FAN_SIZE - 1));
+    user?.SOCKET.emit(IOCommand.FAN_BROADCAST_START, this.FAN$room$duration * (this.FAN$room$size - 1));
     user?.SOCKET.emit(IOCommand.RTC_PEERS, this.FAN$spectator.map(value => value.ID));
 
     // Notify queue
