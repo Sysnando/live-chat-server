@@ -12,11 +12,11 @@ export class CameraService {
   get video$() { return this.video.asObservable() }
   get videoStream$() { return this.videoStream.asObservable() }
 
-  start(config: MediaStreamConstraints, video: HTMLVideoElement): Promise<void> {
+  start(video: HTMLVideoElement): Promise<void> {
     this.video.getValue() && this.stop();
     this.video.next(video);
 
-    return navigator.mediaDevices.getUserMedia(config)
+    return navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 360 } })
       .then((value: MediaStream) => this.videoStream.next(video.srcObject = value))
       .then(() => video.play());
   }

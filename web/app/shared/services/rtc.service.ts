@@ -71,7 +71,7 @@ export class RTCService {
 
         connection.createOffer()
           .then(value => connection.setLocalDescription(value)
-            .then(() => this.io.rtcOffer({ sdp: value.sdp, to: peer })));
+            .then(() => this.io.rtcOffer({ sdp: this.sdpSetup(value.sdp), to: peer })));
       });
   }
 
@@ -96,7 +96,7 @@ export class RTCService {
         connection.setRemoteDescription({ type: 'offer', sdp: value.sdp });
         connection.createAnswer()
           .then(value => connection.setLocalDescription(value)
-            .then(() => this.io.rtcAnswer({ sdp: value.sdp, to: peer })));
+            .then(() => this.io.rtcAnswer({ sdp: this.sdpSetup(value.sdp), to: peer })));
   }
 
   private onPeers(value: string[]) {
@@ -123,6 +123,28 @@ export class RTCService {
 
     this.videoStream = stream;
     this.broadcast();
+  }
+
+  private sdpSetup(sdp: string) {
+    return this.sdpSetup$bitrate(sdp, 1000);
+  }
+
+  // Thanks WebRTC Samples: https://github.com/webrtc/samples/blob/9f7e3b73c6ef69232c2e14b453f7c0c528ee61a1/src/content/peerconnection/bandwidth/js/main.js
+  private sdpSetup$bitrate(sdp: string, bandwidth: number) {
+    let modifier = 'AS';
+
+    if (navigator.userAgent.includes('Firefox')) {
+      bandwidth = (bandwidth >>> 0) * 1000;
+      modifier = 'TIAS';
+    }
+
+    if (sdp.indexOf('b=' + modifier + ':') === -1) {
+      sdp = sdp.replace(/c=IN (.*)\r\n/, 'c=IN $1\r\nb=' + modifier + ':' + bandwidth + '\r\n'); // insert b= after c= line.
+    } else {
+      sdp = sdp.replace(new RegExp('b=' + modifier + ':.*\r\n'), 'b=' + modifier + ':' + bandwidth + '\r\n');
+    }
+
+    return sdp;
   }
 
   private get RTCPeerConnectionConfiguration() {

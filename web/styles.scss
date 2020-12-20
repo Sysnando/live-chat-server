@@ -6,6 +6,28 @@
 html { height: 100%; width: 100% }
 body { height: 100%; width: 100%; background: #14141C }
 
+input { background: transparent !important }
+
 .border-muted { border-color: $text-muted !important }
 
-input { background: transparent !important }
+.bs-tooltip-bottom { top: calc(100% + 2px); left: 50%; transform: translateX(-50%) }
+.bs-tooltip-bottom .arrow { left: 50%; transform: translateX(-50%) }
+
+.bs-tooltip-left { right: calc(100% + 2px); top: 50%; transform: translateY(-50%) }
+.bs-tooltip-left .arrow { top: 50%; transform: translateY(-50%) }
+
+.bs-tooltip-right { left: calc(100% + 2px); top: 50%; transform: translateY(-50%) }
+.bs-tooltip-right .arrow { top: 50%; transform: translateY(-50%) }
+
+.bs-tooltip-top { bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%) }
+.bs-tooltip-top .arrow { left: 50%; transform: translateX(-50%) }
+
+.tooltip.show { opacity: 1 }
+.tooltip-inner {
+  border-radius: 4px !important;
+  line-height: 1.1;
+  max-width: initial;
+  padding: 0.50rem;
+  text-align: left;
+  white-space: nowrap;
+}

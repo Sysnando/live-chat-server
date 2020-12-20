@@ -43,13 +43,13 @@ export class VideoWriter extends EventEmitter {
 
     this._endedPromise = new Promise((resolve, reject) => {
       ffmpeg({ source: this._stream, priority: 20 })
-        .videoBitrate(1500, true)
+        .videoBitrate(1000, true)
         .videoCodec('libx264')
         .inputFormat('image2pipe')
         .inputFPS(this._framesPerSecond)
         .noAudio()
         .outputOptions(['-avioflags direct', '-fflags nobuffer', '-fflags discardcorrupt']) // Low latency flags
-        .outputOptions(['-g 30', '-keyint_min 30']) // Set keyframe interval to 1s
+        .outputOptions(['-g 25', '-keyint_min 25']) // Set keyframe interval to 1s
         .outputOptions('-preset ultrafast')
         .outputOptions('-pix_fmt yuv420p')
         .on('error', (e) => {

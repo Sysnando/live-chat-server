@@ -88,10 +88,10 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
 
     switch (this.modalPage = page) {
       case ChatWindowModalPage.SETUP_CAMERA:
-        this.camera.start({ video: { facingMode: "user" } }, this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.camera.start(this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
         break;
       case ChatWindowModalPage.STREAM_START:
-        this.camera.start({ video: { facingMode: "user" } }, this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
 
         this.subscriptionCoutdown = this.io.fanCountdown$
           .pipe(take(1), switchMap(value => timer(0, 1000)

@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnChanges, SimpleChanges, AfterViewInit} from '@angular/core';
-import videojs from 'video.js';
+import videojs, {VideoJsPlayerOptions} from 'video.js';
 
 import { registerIVSQualityPlugin, registerIVSTech, VideoJSIVSTech, VideoJSQualityPlugin } from 'amazon-ivs-player';
 
@@ -11,21 +11,19 @@ import { registerIVSQualityPlugin, registerIVSTech, VideoJSIVSTech, VideoJSQuali
 export class ChatWindowVideoComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   @Input() src: string;
-  @Input() options: ChatWindowVideoOptions;
+  @Input() options: VideoJsPlayerOptions;
 
-  player: videojs.Player;
+  player: videojs.Player & VideoJSIVSTech & VideoJSQualityPlugin;
 
   constructor() {}
 
   ngAfterViewInit() {
 
+    registerIVSTech(videojs, { wasmBinary: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.wasm', wasmWorker: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.js' });
     registerIVSQualityPlugin(videojs);
-    registerIVSTech(videojs, {
-      wasmBinary: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.js',
-      wasmWorker: '/assets/amazon-ivs/amazon-ivs-wasmworker.min.wasm',
-    });
 
     this.player = videojs('ushowme-player', this.options, () => this.onPlayerReady()) as videojs.Player & VideoJSIVSTech & VideoJSQualityPlugin;
+    this.player.enableIVSQualityPlugin();
     this.onPlayerSrc();
   }
 
@@ -53,5 +51,5 @@ interface ChatWindowVideoOptions {
   autoplay: boolean;
   controls: boolean;
   muted: boolean;
-  techOrder?: ['AmazonIVS'];
+  techOrder?: string[];
 }

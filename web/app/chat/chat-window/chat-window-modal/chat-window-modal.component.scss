@@ -16,6 +16,9 @@
   z-index: 1000;
 }
 
+.modal-body { overflow-y: auto }
+.modal-content { max-height: 90vh }
+
 video {
   transform: scaleX(-1);
   width: 100%;

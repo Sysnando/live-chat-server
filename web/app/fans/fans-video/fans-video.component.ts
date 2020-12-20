@@ -42,8 +42,8 @@ export class FansVideoComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.subscription = this.rtc.update$.subscribe(() => this.update());
   }
 
-  onClickBan() { this.io.moderatorBan(this.id); this.busy = true; }
-  onClickKick() { this.io.moderatorKick(this.id); this.busy = true; }
+  onClickBan() { window.confirm('Tem a certeza que pretende banir?\nO utilizador não vai poder participar mais no chat nem nos top fãs') && this.io.moderatorBan(this.id); this.busy = true; }
+  onClickKick() { window.confirm('Tem a certeza que pretende kickar?') && this.io.moderatorKick(this.id); this.busy = true; }
 
   ngAfterViewInit() {
     this.update();

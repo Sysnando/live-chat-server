@@ -90,7 +90,8 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.subscriptionSocketStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
   }
 
-  get chatDisabled() { return this.socketStatus != SocketStatus.CONNECTED || !this.chatInput?.trim().length }
+  get connected() { return this.socketStatus == SocketStatus.CONNECTED && this.roomSize > 0 }
+  get chatDisabled() { return !this.connected || !this.chatInput?.trim().length }
 
   chatMessage$from(message: ChatMessage) { return message?.from }
   chatMessage$message(message: ChatMessage) { return message?.message }

@@ -9,7 +9,7 @@ const PUPPETEER_ARGS = ENV == Environment.PROD ? ['--autoplay-policy=no-user-ges
 const PUPPETEER_URL = ENV == Environment.PROD ? 'http://localhost' : 'http://localhost:4200';
 
 // Note: we need to add some extra pixels due to Windows' awkward window sizing api
-const PUPPETEER_SIZE_HEIGHT = 480 + (ENV == Environment.PROD ? 0 : 130);
+const PUPPETEER_SIZE_HEIGHT = 360 + (ENV == Environment.PROD ? 0 : 130);
 const PUPPETEER_SIZE_WIDTH = 640 + (ENV == Environment.PROD ? 0 : 16);
 
 export class IORoomRecorder {

@@ -3,7 +3,7 @@
   <!-- Top Fans -->
   <div class="card-body flex-grow-0 border-bottom border-dark">
     <!-- Video -->
-    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [src]="roomVideo" [options]="{ autoplay: true, controls: false, muted: true }"></chat-window-video>
+    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [src]="roomVideo" [options]="{ autoplay: true, controls: false, muted: true, plugins: { reloadSourceOnError: {} }, techOrder: ['AmazonIVS'] }"></chat-window-video>
 
     <!-- Modal -->
     <app-chat-window-modal *ngIf="modalOpen" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>
@@ -17,7 +17,7 @@
       -->
 
       <div *ngIf="queueStatus == QueueStatus.NONE" class="d-flex align-items-center flex-grow-1">
-        <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || socketStatus != SocketStatus.CONNECTED">Top Fã? Entra aqui</button>
+        <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || !connected">Top Fã? Entra aqui</button>
       </div>
       <div *ngIf="queueStatus == QueueStatus.WAITING" class="d-flex align-items-center flex-grow-1">
         <div class="flex-grow-1 px-3 text-right text-white">Em espera... faltam {{ queueSize }} pessoa(s)</div>
