@@ -34,8 +34,9 @@
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
         <p class="text-justify">Dá permissão para testares a câmera antes de participares.</p>
 
-        <div class="card border border-primary overflow-hidden mb-3">
-          <video #cameraPreview></video>
+        <div class="card border border-primary overflow-hidden mb-3 position-relative">
+          <div style="padding-bottom: 56.25%"></div>
+          <video #cameraPreview autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
         </div>
 
         <p class="text-justify">Se a câmera funciona bem, carrega em finalizar teste que desliga a câmera e coloca-te em fila de espera.</p>
@@ -56,8 +57,9 @@
         <h4 *ngIf="countdown == 0" class="font-weight-bolder text-center mb-0">Força!</h4>
         <h2 *ngIf="countdown == 0" class="font-weight-bolder text-center">Toca a mexer!</h2>
 
-        <div class="card border border-primary overflow-hidden mt-3">
-          <video #cameraPreview2></video>
+        <div class="card border border-primary overflow-hidden mt-3 position-relative">
+          <div style="padding-bottom: 56.25%"></div>
+          <video #cameraPreview2 autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
         </div>
       </div>
 

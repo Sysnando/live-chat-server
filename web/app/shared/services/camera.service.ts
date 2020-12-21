@@ -18,7 +18,6 @@ export class CameraService {
 
     return navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 360 } })
       .then((value: MediaStream) => this.videoStream.next(video.srcObject = value))
-      .then(() => video.play());
   }
 
   stop() {
