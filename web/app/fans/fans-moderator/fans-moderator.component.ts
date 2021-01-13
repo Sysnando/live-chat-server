@@ -16,9 +16,12 @@ export class FansModeratorComponent implements OnDestroy {
               paramEvent: string;
 
               peer: string;
+              peerName: string;
               peerQueue: string[];
+              peerQueueNames: string[];
 
   private     subscriptionPeers: Subscription;
+  private     subscriptionPeersNames: Subscription;
   private     subscriptionSocketStatus: Subscription;
 
   constructor(
@@ -32,6 +35,7 @@ export class FansModeratorComponent implements OnDestroy {
     this.paramEvent && this.rtc.reset();
 
     this.subscriptionPeers = this.io.rtcPeers$.subscribe(value => this.onPeers(value));
+    this.subscriptionPeersNames = this.io.rtcPeersNames$.subscribe(value => this.onPeersNames(value));
     this.subscriptionSocketStatus = io.socketStatus$.subscribe(value => this.onSocketStatus(value));
   }
 
@@ -42,7 +46,13 @@ export class FansModeratorComponent implements OnDestroy {
 
   onPeers(value: string[]) {
     this.peer = value[0];
-    this.peerQueue = value.slice(1, 10);
+    this.peerQueue = value.slice(1);
+
+    this.changeDetector.markForCheck();
+  }
+  onPeersNames(value: string[]) {
+    this.peerName = value[0];
+    this.peerQueueNames = value.slice(1);
 
     this.changeDetector.markForCheck();
   }
@@ -50,6 +60,8 @@ export class FansModeratorComponent implements OnDestroy {
     if (value == SocketStatus.CONNECTED)
       this.io.fanEnter(this.paramEvent);
   }
+
+  peerQueueName(index: number) { return this.peerQueueNames?.[index] }
 
   trackByValue(index: number, value: string) { return value }
 

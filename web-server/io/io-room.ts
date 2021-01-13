@@ -85,13 +85,24 @@ export class IORoom {
     if (this.BANNED[user?.ADDRESS] && user.SOCKET.disconnect(true)) return;
     if (this.FAN$room.includes(user) && user) return;
 
-    this.FAN$room.push(user);
+    // Calculate position
+    let position = this.FAN$room.findIndex(value => value == undefined);
+        position = Math.min(Math.max(position, 3), this.FAN$room$size);
+
+    this.FAN$room.splice(position, 0, user);
+
+    // Notify user & peers
+    user?.SOCKET.emit(IOCommand.QUEUE_LEAVE);
+    user?.SOCKET.emit(IOCommand.FAN_BROADCAST_START, this.FAN$room$duration * (position - 1));
+    this.update$queue$peers();
   }
-  onFanLeave(user: IOUser) {
+  onFanLeave(user: IOUser, graceful: boolean = false) {
     if (this.initialized != true) return;
     if (this.FAN$room.includes(user) && user)
         this.FAN$room[this.FAN$room.indexOf(user)] = undefined;
 
+    // Notify user & peers
+    graceful && user?.SOCKET.emit(IOCommand.FAN_BROADCAST_STOP);
     this.update$queue$peers();
   }
 
@@ -204,30 +215,20 @@ export class IORoom {
     if (this.FAN$room$tick = this.FAN$room$tick - 1) return;
         this.FAN$room$tick = this.FAN$room$duration;
 
-    let user;
-
-    // Take first user from queue
-    user = this.FAN$queue.shift();
-    user?.SOCKET.emit(IOCommand.QUEUE_LEAVE);
-    user?.SOCKET.emit(IOCommand.FAN_BROADCAST_START, this.FAN$room$duration * (this.FAN$room$size - 1));
-    user?.SOCKET.emit(IOCommand.RTC_PEERS, this.FAN$spectator.map(value => value.ID));
+    // Take first user from the queue and add it as a Fan
+    this.onFanEnter(this.FAN$queue.shift())
 
     // Notify queue
     this.FAN$queue.forEach(user => user.SOCKET.emit(IOCommand.QUEUE_SIZE, this.queue$size(user)));
 
-    // Add user to FAN room queue, at the end
-    this.onFanEnter(user);
-
     // Remove current broadcasting user from FAN room as their time has ended
-    user = this.FAN$room.shift();
-    user?.SOCKET.emit(IOCommand.FAN_BROADCAST_STOP);
-
-    this.update$queue$peers();
+    this.onFanLeave(this.FAN$room.shift(), true);
   }
   update$queue$peers() {
     // Notify peers about the presence of each other
     this.FAN$room.forEach(value => value?.SOCKET.emit(IOCommand.RTC_PEERS, this.FAN$spectator.map(value => value.ID)));
     this.FAN$spectator.forEach(value => value.SOCKET.emit(IOCommand.RTC_PEERS, this.FAN$room.map(value => value?.ID)));
+    this.FAN$spectator.forEach(value => value.SOCKET.emit(IOCommand.RTC_PEERS_NAMES, this.FAN$room.map(value => value?.NAME)));
   }
 
   private chat$log$load(room: string) {

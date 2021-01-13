@@ -1,7 +1,7 @@
 <!-- Current -->
-<app-fans-video [id]="peer" [moderator]="true"></app-fans-video>
+<app-fans-video [id]="peer" [moderator]="true" [name]="peerName"></app-fans-video>
 
 <!-- Queue -->
 <div style="display: grid; grid-template-columns: 33.33% 33.33% 33.33%; grid-template-rows: 33.33% 33.33% 33.33%">
-  <app-fans-video *ngFor="let peer of peerQueue; trackBy: trackByValue" [id]="peer" [moderator]="true"></app-fans-video>
+  <app-fans-video *ngFor="let peer of peerQueue; index as i; trackBy: trackByValue" [id]="peer" [moderator]="true" [name]="peerQueueName(i)"></app-fans-video>
 </div>

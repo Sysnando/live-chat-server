@@ -8,10 +8,10 @@ export class IOUser {
 
   public readonly   ADDRESS: string;
   public readonly   ID: string;
+  public            NAME: string;
   public readonly   SOCKET: Socket;
 
   private readonly  IO: Server;
-  private           NAME: string;
   private           ROOM: IORoom;
   private readonly  ROLES: IOUserRole[];
 

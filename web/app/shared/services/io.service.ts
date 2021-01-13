@@ -25,6 +25,7 @@ export class IOService {
   private rtcCandidates = new Subject<RTCCandidate>();
   private rtcOffers = new Subject<RTCOffer>();
   private rtcPeers = new Subject<string[]>();
+  private rtcPeersNames = new Subject<string[]>();
 
   private socket: Socket;
   private socketStatus = new BehaviorSubject<SocketStatus>(SocketStatus.CONNECTING);
@@ -49,6 +50,7 @@ export class IOService {
   get rtcCandidates$() { return this.rtcCandidates.asObservable() }
   get rtcOffers$() { return this.rtcOffers.asObservable() }
   get rtcPeers$() { return this.rtcPeers.asObservable() }
+  get rtcPeersNames$() { return this.rtcPeersNames.asObservable() }
 
   get socketStatus$() { return this.socketStatus.asObservable() }
 
@@ -80,6 +82,7 @@ export class IOService {
     this.socket.on(IOCommand.RTC_CANDIDATE, (value: RTCCandidate) => this.rtcCandidates.next(value));
     this.socket.on(IOCommand.RTC_OFFER, (value: RTCOffer) => this.rtcOffers.next(value));
     this.socket.on(IOCommand.RTC_PEERS, (value: string[]) => this.rtcPeers.next(value));
+    this.socket.on(IOCommand.RTC_PEERS_NAMES, (value: string[]) => this.rtcPeersNames.next(value));
   }
 
   fanEnter(room: string) { this.socket.emit(IOCommand.SPECTATOR_ENTER, room) }

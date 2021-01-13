@@ -20,6 +20,7 @@ export enum IOCommand {
   RTC_CANDIDATE = 'rtc.candidate',
   RTC_OFFER = 'rtc.offer',
   RTC_PEERS = 'rtc.peers',
+  RTC_PEERS_NAMES = 'rtc.peers.names',
 
   SPECTATOR_ENTER = 'spectator.enter',
 }

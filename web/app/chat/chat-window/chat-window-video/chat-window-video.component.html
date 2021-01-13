@@ -1,1 +1,7 @@
 <video id="ushowme-player" class="video-js vjs-16-9 vjs-default-skin vjs-big-play-centered h-100 p-0" autoplay muted playsinline></video>
+
+<!-- Player Status -->
+<div *ngIf="!isPlaying && src" class="d-flex align-items-center justify-content-center position-absolute h-100 w-100" style="left: 0; top: 0">
+  <div *ngIf="isBuffering" class="spinner-border text-primary"></div>
+  <div *ngIf="isBuffering != true" class="btn btn-primary rounded-circle" style="height: 72px; width: 72px" (click)="play()"><fa-icon [icon]="faPlay" size="2x"></fa-icon></div>
+</div>

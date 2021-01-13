@@ -1,2 +1,2 @@
-<app-fans-video *ngFor="let id of peers; index as i; trackBy: trackByValue" [card]="false" [id]="id" style="height: 100vh; width: 100vw"
+<app-fans-video *ngFor="let id of peers; index as i; trackBy: trackByValue" [card]="false" [id]="id" [name]="peerName(i)" style="height: 100vh; width: 100vw"
                 [ngClass]="{ 'd-none': i > 0 }"></app-fans-video>

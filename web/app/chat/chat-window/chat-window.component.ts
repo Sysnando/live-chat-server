@@ -149,7 +149,6 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
   }
 
   onModeratorAction(value: ModeratorAction) {
-    console.log('onModeratorAction', value)
     if (value == ModeratorAction.BAN) {
       this.modalPage = ChatWindowModalPage.STREAM_STOP_BANNED;
       this.onModalOpen();
@@ -176,7 +175,7 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.chatMessages.length > LOG_SIZE && this.chatMessages.shift();
 
     this.changeDetector.markForCheck();
-    this.chatLog.nativeElement.scrollTo({ top: this.chatLog.nativeElement.scrollHeight, behavior: 'smooth' });
+    window.requestAnimationFrame(() => this.chatLog.nativeElement.scrollTo({ top: this.chatLog.nativeElement.scrollHeight, behavior: 'smooth' }));
   }
   onRoomSize(value: number) {
     this.roomSize = value;
@@ -191,7 +190,6 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.socketStatus = value;
     this.changeDetector.markForCheck();
 
-    console.log('onSocketStatus', value)
     if (this.socketStatus == SocketStatus.CONNECTED) {
         this.chatMessages = [];
         this.queueStatus = QueueStatus.NONE;

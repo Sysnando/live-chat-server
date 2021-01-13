@@ -1,9 +1,12 @@
 <div class="d-flex flex-column h-100">
 
   <!-- Top Fans -->
-  <div class="card-body flex-grow-0 border-bottom border-dark">
+  <div class="card-body flex-grow-0 border-bottom border-dark flex-shrink-0">
     <!-- Video -->
-    <chat-window-video class="card border border-primary overflow-hidden" style="height: 30vh" [src]="roomVideo" [options]="{ autoplay: true, controls: false, muted: true, plugins: { reloadSourceOnError: {} }, techOrder: ['AmazonIVS'] }"></chat-window-video>
+    <div class="card border border-primary overflow-hidden position-relative">
+      <div style="padding-bottom: 56.25%"></div>
+      <chat-window-video class="h-100 w-100 position-absolute" [src]="roomVideo" [options]="{ autoplay: true, controls: false, muted: true, techOrder: ['AmazonIVS'] }"></chat-window-video>
+    </div>
 
     <!-- Modal -->
     <app-chat-window-modal *ngIf="modalOpen" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>
@@ -17,11 +20,11 @@
       -->
 
       <div *ngIf="queueStatus == QueueStatus.NONE" class="d-flex align-items-center flex-grow-1">
-        <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || !connected">Top Fã? Entra aqui</button>
+        <button class="btn btn-primary flex-grow-1" (click)="onClickQueueEnter()" [disabled]="busy$queue || !connected">Hey, Top Fan!</button>
       </div>
       <div *ngIf="queueStatus == QueueStatus.WAITING" class="d-flex align-items-center flex-grow-1">
-        <div class="flex-grow-1 px-3 text-right text-white">Em espera... faltam {{ queueSize }} pessoa(s)</div>
-        <button class="btn btn-primary" (click)="onClickQueueLeave()" [disabled]="busy$queue">Desistir</button>
+        <div class="flex-grow-1 px-3 text-right text-white">In queue... {{ queueSize }} person(s) ahead</div>
+        <button class="btn btn-primary" (click)="onClickQueueLeave()" [disabled]="busy$queue">Leave</button>
       </div>
     </div>
   </div>
@@ -37,13 +40,13 @@
 
       <!-- Room Status -->
       <div class="text-success" *ngIf="socketStatus == SocketStatus.CONNECTED">• {{ roomSize }} Online</div>
-      <div class="text-warning" *ngIf="socketStatus == SocketStatus.CONNECTING">• Conectando...</div>
-      <div class="text-muted" *ngIf="socketStatus == SocketStatus.DISCONNECTED">• Indisponível</div>
+      <div class="text-warning" *ngIf="socketStatus == SocketStatus.CONNECTING">• Connecting...</div>
+      <div class="text-muted" *ngIf="socketStatus == SocketStatus.DISCONNECTED">• Disconnected</div>
     </div>
   </div>
 
   <!-- Log -->
-  <div class="card-body flex-grow-1 overflow-auto" style="max-height: 100%" #chatLog>
+  <div class="card-body flex-grow-1 overflow-auto" style="max-height: 100%; min-height: 100px; line-height: 1.2" #chatLog>
     <div *ngFor="let message of chatMessages">
       <span class="text-primary">{{ chatMessage$from(message) }}</span>&nbsp;
       <span class="text-muted">{{ chatMessage$time(message) }}</span>&nbsp;

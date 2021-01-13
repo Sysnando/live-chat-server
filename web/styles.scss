@@ -3,12 +3,14 @@
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~video.js/dist/video-js';
 
-html { height: 100%; width: 100% }
+html { height: 100%; width: 100%; }
 body { height: 100%; width: 100%; background: #14141C }
 
 input { background: transparent !important }
 
 .border-muted { border-color: $text-muted !important }
+
+.btn.rounded-circle { display: flex; align-items: center; justify-content: center; padding: 0 }
 
 .bs-tooltip-bottom { top: calc(100% + 2px); left: 50%; transform: translateX(-50%) }
 .bs-tooltip-bottom .arrow { left: 50%; transform: translateX(-50%) }

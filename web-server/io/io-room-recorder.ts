@@ -44,13 +44,13 @@ export class IORoomRecorder {
       page: this.PAGE,
       options: {
         followPopups: false,
-        fps: 30,
+        fps: 25,
         publish: true,
       },
       savePath: this.ROOM.urlIngest,
     });
 
-    console.log(`Recording ${ this.ROOM.urlSpectator } -> ${ this.ROOM.urlIngest }`);
+    console.log(`Recording ${ this.ROOM.urlSpectator } -> ${ this.ROOM.urlIngest } -- Started`);
 
     // For testing locally:
     //this.PAGE_CAPTURE = await PageVideoCapture.start({ page: this.PAGE, options: { followPopups: false, fps: 30 }, savePath: '/mnt/c/Work/test.mp4' });
@@ -65,6 +65,8 @@ export class IORoomRecorder {
 
     this.PAGE = undefined;
     this.PAGE_CAPTURE = undefined;
+
+    console.log(`Recording ${ this.ROOM.urlSpectator } -> ${ this.ROOM.urlIngest } -- Stopped`);
   }
 
 }

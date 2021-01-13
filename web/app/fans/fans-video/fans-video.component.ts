@@ -28,6 +28,7 @@ export class FansVideoComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input()                      card: boolean = true;
   @Input()                      id: string;
   @Input()                      moderator: boolean;
+  @Input()                      name: string;
 
   @ViewChild('video')           video: ElementRef;
   @ViewChild('videoBackground') videoBackground: ElementRef;

@@ -1,8 +1,8 @@
-<div class="modal-dialog">
-  <div class="modal-content">
+<div class="modal-dialog" style="max-width: initial">
+  <div class="modal-content" style="max-width: 640px; width: 90vw">
     <!-- Header -->
     <div class="modal-header align-items-center border-0">
-      <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center text-primary w-100" style="left: 0">Top Fãs</h4>
+      <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center text-primary w-100" style="left: 0">Top Fans</h4>
       <button class="close" (click)="onClickClose()">
         <fa-icon [icon]="faTimes"></fa-icon>
       </button>
@@ -13,49 +13,47 @@
 
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
-        <p class="text-justify">Mostra a todos como estás a curtir pela tua webcam, recebendo amor da audiência e acesso exclusivo a conteúdo e prémios únicos.</p>
-        <p class="text-justify">Para ser uma experência positiva e segura para todos monitorizamos o conteúdo em tempo real e criámos algumas regras importantes.</p>
+        <p class="text-justify">Show how much FUN <b>U</b>’r havin’!<br/>Connect your webcam and give <b>U</b>’r best moooooves</p>
+        <p class="text-justify">To make this experience positive and safe to all, you must respect the Code of Conduct in place. </p>
 
-        <h4 class="font-weight-bolder text-center text-primary">Código de coduta</h4>
-        <h6 class="font-weight-bolder text-center">Não é permitido</h6>
+        <h4 class="font-weight-bolder text-center text-primary">Code of Conduct</h4>
+        <h6 class="font-weight-bolder text-center">It’s not allowed</h6>
 
         <ul class="text-justify pl-0">
-          <li>Nudez parcial ou total.</li>
-          <li>Conteúdo pornográfico ou obsceno.</li>
-          <li>Violência, discriminação, ou mensagens de ódio.</li>
-          <li>Racismo.</li>
-          <li>Política, religião e teorias de conspiração</li>
-          <li>Fazer publicidade a marcas de forma directa.</li>
-          <li>Injeção de código malicioso, ou ligações externas que possam causar danos ao sistema informático.</li>
+          <li>Nudity (partial or total)</li>
+          <li>Obscene or pornographic content</li>
+          <li>Violence, self-harm, hate speech or any form of discrimination</li>
+          <li>Unsolicited advertising, promotional materials or SPAM</li>
+          <li>Interfering with or disrupting the services or bypassing any security measures or restrictions that we have put in place</li>
         </ul>
       </div>
 
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
-        <p class="text-justify">Dá permissão para testares a câmera antes de participares.</p>
+        <p class="text-justify">Grant camera permission to test your camera before participating.</p>
 
         <div class="card border border-primary overflow-hidden mb-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
           <video #cameraPreview autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
         </div>
 
-        <p class="text-justify">Se a câmera funciona bem, carrega em finalizar teste que desliga a câmera e coloca-te em fila de espera.</p>
-        <p class="text-justify">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+        <p class="text-justify">If you see yourself on screen, click on End Test below.</p>
+        <p class="text-justify">We will let you know moments before to join in again </p>
       </div>
 
       <!-- 2. Ready -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_READY }">
-        <h4 class="font-weight-bolder text-center">Tudo pronto!</h4>
-        <p class="text-center">Quando faltar 1 minuto, avisamos para ligares a câmera novamente e te prepares.</p>
+        <h4 class="font-weight-bolder text-center">All set!</h4>
+        <p class="text-center">We will let you know to connect the camera back and get ready!</p>
       </div>
 
       <!-- 3. Stream Start -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_START }">
-        <h4 *ngIf="countdown" class="font-weight-bolder text-center mb-0">Prepara-te! Faltam</h4>
+        <h4 *ngIf="countdown" class="font-weight-bolder text-center mb-0">Get Ready!</h4>
         <h2 *ngIf="countdown" class="font-weight-bolder text-center">{{ countdown }}s</h2>
 
-        <h4 *ngIf="countdown == 0" class="font-weight-bolder text-center mb-0">Força!</h4>
-        <h2 *ngIf="countdown == 0" class="font-weight-bolder text-center">Toca a mexer!</h2>
+        <h4 *ngIf="countdown == 0" class="font-weight-bolder text-center mb-0"><b>U</b>’r Live</h4>
+        <h2 *ngIf="countdown == 0" class="font-weight-bolder text-center">- Give <b>U</b>’r best moves!</h2>
 
         <div class="card border border-primary overflow-hidden mt-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
@@ -65,20 +63,20 @@
 
       <!-- 4. Stream Stop -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP }">
-        <h4 class="font-weight-bolder text-center mb-0">Terminado!</h4>
-        <p class="text-center">Esperamos que te tenhas aproveitado bem o teu momento de fama!</p>
+        <h4 class="font-weight-bolder text-center mb-0">Hope <b>U</b> have enjoyed it.</h4>
+        <p class="text-center"><b>U</b> can participate again!</p>
       </div>
 
       <!-- 5. Stream Stop BANNED -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP_BANNED }">
-        <h4 class="font-weight-bolder text-center mb-0">Banido!</h4>
-        <p class="text-center">Foste banido deste evento.<br/>Não podes participar mais no chat nem no top fãs.</p>
+        <h4 class="font-weight-bolder text-center mb-0">Banned!</h4>
+        <p class="text-center">You've been banned from this event.<br/>You can no longer join the chat nor the Top Fans.</p>
       </div>
 
       <!-- 6. Stream Stop KICKED -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP_KICKED }">
-        <h4 class="font-weight-bolder text-center mb-0">Removido!</h4>
-        <p class="text-center">Foste removido dos top fãs.<br/>Cuidado para não violares o nosso Código de Conduta.<br/>Estás avisado.</p>
+        <h4 class="font-weight-bolder text-center mb-0">Kicked!</h4>
+        <p class="text-center">You've been kicked from Top Fans.<br/>Try not to violate our Code of Conduct next time.<br/>You've been warned.</p>
       </div>
 
     </div>
@@ -88,54 +86,19 @@
 
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
-        <p class="text-center text-primary">Ao carregares seguinte estás a aceitar o código de conduta.</p>
+        <p class="text-center text-primary">By pressing next you are accepting our Terms & Conditions</p>
 
         <div class="d-flex justify-content-between">
-          <button class="btn btn-outline-primary" (click)="onClickPage(-1)">Desistir</button>
-          <button class="btn btn-primary" (click)="onClickPage(1)">Seguinte</button>
+          <button class="btn btn-outline-primary" (click)="onClickClose()">Close</button>
+          <button class="btn btn-primary" (click)="onClickPage(1)">Next</button>
         </div>
       </div>
 
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
         <div class="d-flex justify-content-between">
-          <button class="btn btn-outline-primary" (click)="onClickPage(0)">Voltar</button>
-          <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">Finalizar Teste</button>
-        </div>
-      </div>
-
-      <!-- 2. Ready -->
-      <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_READY }">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-primary" (click)="onClickClose()">Fechar</button>
-        </div>
-      </div>
-
-      <!-- 3. Stream Start -->
-      <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_START }">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-primary" (click)="onClickClose()">Desistir</button>
-        </div>
-      </div>
-
-      <!-- 4. Stream Stop -->
-      <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP }">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-primary" (click)="onClickClose()">Fechar</button>
-        </div>
-      </div>
-
-      <!-- 5. Stream Stop BANNED -->
-      <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP_BANNED }">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-primary" (click)="onClickClose()">Fechar</button>
-        </div>
-      </div>
-
-      <!-- 6. Stream Stop KICKED -->
-      <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_STOP_KICKED }">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-primary" (click)="onClickClose()">Fechar</button>
+          <button class="btn btn-outline-primary" (click)="onClickPage(0)">Back</button>
+          <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">End Test</button>
         </div>
       </div>
 

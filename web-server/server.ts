@@ -9,6 +9,9 @@ import {ENV, Environment} from "./environment";
 // Configure logging
 consoleStamp(console, { label: true, pattern: 'yyyy-mm-dd HH:MM:ss' });
 
+// Configure Express MIME Types
+express.static.mime.define({ 'wasm': ['application/wasm'] }, true);
+
 const APP = express();
       APP.use('/', express.static('dist/web'))
       APP.use((req, res, next) => {

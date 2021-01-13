@@ -43,28 +43,24 @@ export class VideoWriter extends EventEmitter {
 
     this._endedPromise = new Promise((resolve, reject) => {
       ffmpeg({ source: this._stream, priority: 20 })
-        .videoBitrate(1000, true)
+        .videoBitrate(1400, true)
         .videoCodec('libx264')
         .inputFormat('image2pipe')
         .inputFPS(this._framesPerSecond)
         .noAudio()
         .outputOptions(['-avioflags direct', '-fflags nobuffer', '-fflags discardcorrupt']) // Low latency flags
-        .outputOptions(['-g 25', '-keyint_min 25']) // Set keyframe interval to 1s
+        .outputOptions(['-g ' + this._framesPerSecond, '-keyint_min ' + (this._framesPerSecond * 2)]) // Set keyframe interval to 2s
         .outputOptions('-preset ultrafast')
         .outputOptions('-pix_fmt yuv420p')
         .on('error', (e) => {
-          this.emit('ffmpegerror', e.message);
-
           // do not reject as a result of not having frames
-          if (
-            !this._receivedFrame &&
-            e.message.includes('pipe:0: End of file')
-          ) {
+          if (e.message.includes('pipe:0: End of file') && !this._receivedFrame) {
+            this.emit('ffmpegerror', e.message);
             resolve();
             return;
           }
 
-          reject(`pw-video: error capturing video: ${e.message}`);
+          this._publishVideo(savePath);
         })
         .on('end', () => {
           resolve();

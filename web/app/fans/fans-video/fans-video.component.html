@@ -4,16 +4,21 @@
   <div class="h-100 w-100 position-absolute" [ngClass]="{ 'd-none': !id }">
     <video autoplay muted playsinline class="position-absolute" style="object-fit: fill" #videoBackground></video>
     <video autoplay muted playsinline class="position-absolute" style="backdrop-filter: blur(12px)" #video></video>
+    <div class="position-absolute spinner-border spinner-border-sm text-white" style="left: 4px; top: 4px; opacity: 0.1" *ngIf="!moderator"></div>
 
-    <div class="position-absolute d-flex justify-content-center p-3 w-100" style="bottom: 0" *ngIf="moderator">
+    <!-- Name -->
+    <h1 class="font-weight-bold position-absolute text-center text-white w-100" style="bottom: 0" *ngIf="name">{{ name }}</h1>
+
+    <!-- Ban/Kick -->
+    <div class="position-absolute d-flex justify-content-between p-3 w-100" style="bottom: 0" *ngIf="moderator">
       <button class="btn btn-danger rounded-circle p-0 mr-3" style="height: 48px; width: 48px" tooltip="Banir" tooltipPlacement="top" (click)="onClickBan()" [disabled]="busy"><fa-icon [icon]="faBan" style="font-size: 150%; line-height: 0"></fa-icon></button>
       <button class="btn btn-warning rounded-circle p-0" style="height: 48px; width: 48px" tooltip="Kickar" tooltipPlacement="top" (click)="onClickKick()" [disabled]="busy"><fa-icon [icon]="faTimes" style="font-size: 150%; line-height: 0"></fa-icon></button>
     </div>
   </div>
 
   <!-- Publicidade -->
-  <div class="flex-column align-items-center justify-content-center h-100 w-100 bg-primary" [ngClass]="id ? 'd-none' : 'd-flex'">
-    <h1 class="mb-0 text-white">Publicidade</h1>
-    <div class="spinner-border text-white mt-3" role="status"></div>
+  <div class="h-100 w-100" [ngClass]="id ? 'd-none' : 'd-flex'" style="transform: scaleX(-1)">
+    <video autoplay muted loop playsinline src="/assets/top_fans_loop.mp4"></video>
+    <div class="position-absolute spinner-border spinner-border-sm text-white" style="left: 4px; top: 4px; opacity: 0.1"></div>
   </div>
 </div>

@@ -4,6 +4,13 @@
   width: 100%;
 }
 
+/* Thanks https://css-tricks.com/adding-stroke-to-web-text/ */
+h1 {
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}
+
 video {
   height: 100%;
   width: 100%;
