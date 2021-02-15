@@ -14,6 +14,8 @@ import {ChannelRepository} from "../repository/channel.repository";
 import {StreamKey} from "../../web-shared/entity/stream-key.model";
 import {StreamKeyRepository} from "../repository/stream-key.repository";
 import {QUERY_PARAM_EVENT} from "../../web-shared/constants";
+import {filter} from "rxjs/operators";
+import {BehaviorSubject} from "rxjs";
 
 export const CHAT_LOG_SIZE = 50;
 
@@ -42,6 +44,9 @@ export class IORoom {
   private           EVENT_STREAM_CHANNEL: Channel;
   private           EVENT_STREAM_KEY: StreamKey;
 
+  private           INIT: boolean;
+  private           INIT_COMPLETE: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   private           FAN$room: IOUser[];
   private           FAN$room$duration: number;
   private           FAN$room$size: number;
@@ -54,12 +59,14 @@ export class IORoom {
     this.IO = IO;
   }
 
-  async init() {
-    if (this.initialized) return this;
-        this.EVENT = await EventRepository.INSTANCE.findOneById(this.ID);
-        this.EVENT_STREAM = this.EVENT && await StreamRepository.INSTANCE.findOneByEventAndType(this.EVENT.id, "TOP_FAN");
-        this.EVENT_STREAM_CHANNEL = this.EVENT && this.EVENT_STREAM && await ChannelRepository.INSTANCE.findOneById(this.EVENT_STREAM.channelId);
-        this.EVENT_STREAM_KEY = this.EVENT && this.EVENT_STREAM && await StreamKeyRepository.INSTANCE.findOneById(this.EVENT_STREAM.streamKeyId);
+  async init(): Promise<this> {
+    if (this.INIT) return this.initialized.then(() => this);
+        this.INIT = true;
+
+    this.EVENT = await EventRepository.INSTANCE.findOneById(this.ID);
+    this.EVENT_STREAM = this.EVENT && await StreamRepository.INSTANCE.findOneByEventAndType(this.EVENT.id, "TOP_FAN");
+    this.EVENT_STREAM_CHANNEL = this.EVENT && this.EVENT_STREAM && await ChannelRepository.INSTANCE.findOneById(this.EVENT_STREAM.channelId);
+    this.EVENT_STREAM_KEY = this.EVENT && this.EVENT_STREAM && await StreamKeyRepository.INSTANCE.findOneById(this.EVENT_STREAM.streamKeyId);
 
     if (this.EVENT == undefined)
         throw new Error(`Invalid Event ID: ${ this.ID }`);
@@ -69,19 +76,21 @@ export class IORoom {
     this.FAN$room$tick = this.EVENT.topFansTimer;
     this.FAN$room = new Array(this.FAN$room$size).fill(undefined);
 
+    this.INIT_COMPLETE.next(true);
     console.log(`Room for Event ${ this.EVENT.id } initialized. Duration: ${ this.FAN$room$duration }, Size: ${ this.FAN$room$size }`);
 
     return this;
   }
 
-  get initialized() { return !!this.EVENT }
+  get initialized(): Promise<boolean> { return new Promise(resolve => this.INIT_COMPLETE.pipe(filter(value => value)).subscribe(() => resolve())) }
 
   get urlFans() { return this.EVENT_STREAM_CHANNEL.playbackUrl }
   get urlIngest() { return `rtmps://${ this.EVENT_STREAM_CHANNEL.ingestEndpoint }:443/app/${ this.EVENT_STREAM_KEY.value }` }
   get urlSpectator() { return `fans/spectator?${ QUERY_PARAM_EVENT }=${ this.EVENT.id }` }
 
-  onFanEnter(user: IOUser) {
-    if (this.initialized != true) return;
+  async onFanEnter(user: IOUser) {
+    await this.initialized;
+
     if (this.BANNED[user?.ADDRESS] && user.SOCKET.disconnect(true)) return;
     if (this.FAN$room.includes(user) && user) return;
 
@@ -96,8 +105,9 @@ export class IORoom {
     user?.SOCKET.emit(IOCommand.FAN_BROADCAST_START, this.FAN$room$duration * (position - 1));
     this.update$queue$peers();
   }
-  onFanLeave(user: IOUser, graceful: boolean = false) {
-    if (this.initialized != true) return;
+  async onFanLeave(user: IOUser, graceful: boolean = false) {
+    await this.initialized;
+
     if (this.FAN$room.includes(user) && user)
         this.FAN$room[this.FAN$room.indexOf(user)] = undefined;
 
@@ -106,8 +116,9 @@ export class IORoom {
     this.update$queue$peers();
   }
 
-  onQueueEnter(user: IOUser) {
-    if (this.initialized != true) return;
+  async onQueueEnter(user: IOUser) {
+    await this.initialized;
+
     if (this.BANNED[user.ADDRESS] && user.SOCKET.disconnect(true)) return;
     if (this.FAN$queue.includes(user)) return;
         this.FAN$queue.push(user);
@@ -115,16 +126,17 @@ export class IORoom {
     user.SOCKET.emit(IOCommand.QUEUE_ENTER);
     user.SOCKET.emit(IOCommand.QUEUE_SIZE, this.queue$size(user));
   }
-  onQueueLeave(user: IOUser) {
-    if (this.initialized != true) return;
+  async onQueueLeave(user: IOUser) {
+    await this.initialized;
+
     if (this.FAN$queue.includes(user) == false) return;
         this.FAN$queue.splice(this.FAN$queue.indexOf(user, 1), 1);
 
     user.SOCKET.emit(IOCommand.QUEUE_LEAVE);
   }
 
-  onModeratorBan(user: IOUser) {
-    if (this.initialized != true) return;
+  async onModeratorBan(user: IOUser) {
+    await this.initialized;
 
     this.BANNED[user.ADDRESS] = true;
 
@@ -132,16 +144,17 @@ export class IORoom {
     user.SOCKET.emit(IOCommand.MODERATOR_BAN);
     user.SOCKET.disconnect();
   }
-  onModeratorKick(user: IOUser) {
-    if (this.initialized != true) return;
+  async onModeratorKick(user: IOUser) {
+    await this.initialized;
 
     user.SOCKET.emit(IOCommand.MODERATOR_KICK);
 
-    this.onFanLeave(user);
+    await this.onFanLeave(user);
   }
 
-  onRoomEnter(user: IOUser) {
-    if (this.initialized != true) return;
+  async onRoomEnter(user: IOUser) {
+    await this.initialized;
+
     if (this.BANNED[user.ADDRESS] && user.SOCKET.disconnect(true)) return;
 
     let room = this.chat$room$grow(this.name$chat());
@@ -154,15 +167,15 @@ export class IORoom {
     }
 
     // Load chat log
-    this.chat$log$load(room).then(value => {
-      user.SOCKET.join(room);
-      user.SOCKET.emit(IOCommand.ROOM_MESSAGE_LOG, value)
-      user.SOCKET.emit(IOCommand.ROOM_SIZE, roomSize);
-      user.SOCKET.emit(IOCommand.ROOM_VIDEO, this.urlFans);
-    })
+    let log = await this.chat$log$load(room);
+
+    user.SOCKET.join(room);
+    user.SOCKET.emit(IOCommand.ROOM_MESSAGE_LOG, log)
+    user.SOCKET.emit(IOCommand.ROOM_SIZE, roomSize);
+    user.SOCKET.emit(IOCommand.ROOM_VIDEO, this.urlFans);
   }
-  onRoomLeave(user: IOUser) {
-    if (this.initialized != true) return;
+  async onRoomLeave(user: IOUser) {
+    await this.initialized;
 
     // Leave all related rooms
     user.SOCKET.rooms.forEach(value => value.startsWith(this.ID) && user.SOCKET.leave(value));
@@ -173,11 +186,12 @@ export class IORoom {
         this.RECORDER = undefined;
     }
 
-    this.onFanLeave(user);
-    this.onQueueLeave(user);
+    await this.onFanLeave(user);
+    await this.onQueueLeave(user);
   }
-  onRoomMessage(user: IOUser, message: ChatMessage) {
-    if (this.initialized != true) return;
+  async onRoomMessage(user: IOUser, message: ChatMessage) {
+    await this.initialized;
+
     if (this.BANNED[user.ADDRESS] && user.SOCKET.disconnect(true)) return;
 
     let room = Array.from(user.SOCKET.rooms).find(value => value.startsWith(this.name$chat()));
@@ -186,32 +200,35 @@ export class IORoom {
     this.chat$log$push(room, message);
   }
 
-  onSpectatorEnter(user: IOUser) {
-    if (this.initialized != true) return;
+  async onSpectatorEnter(user: IOUser) {
+    await this.initialized;
+
     if (this.BANNED[user.ADDRESS] && user.SOCKET.disconnect(true)) return;
     if (this.FAN$spectator.includes(user)) return;
 
     this.FAN$spectator.push(user);
     this.update$queue$peers();
   }
-  onSpectatorLeave(user: IOUser) {
-    if (this.initialized != true) return;
+  async onSpectatorLeave(user: IOUser) {
+    await this.initialized;
+
     if (this.FAN$spectator.includes(user))
         this.FAN$spectator.splice(this.FAN$spectator.indexOf(user), 1);
   }
 
-  update$chat$log() { Utils.objectKeys(this.CHAT$dirty).forEach(value => this.chat$log$persist(`${ value }`)) }
-  update$chat$room() { this.chat$room$shrink() }
-  update$chat$size() {
-    if (this.initialized != true) return;
+  async update$chat$log() { await this.initialized; Utils.objectKeys(this.CHAT$dirty).forEach(value => this.chat$log$persist(`${ value }`)) }
+  async update$chat$room() { await this.initialized; this.chat$room$shrink() }
+  async update$chat$size() {
+    await this.initialized;
 
     let size = this.size$chat();
     let rooms = this.rooms$chat();
         rooms.forEach(value => this.IO.sockets.in(value).emit(IOCommand.ROOM_SIZE, size));
   }
 
-  update$queue() {
-    if (this.initialized != true) return;
+  async update$queue() {
+    await this.initialized;
+
     if (this.FAN$room$tick = this.FAN$room$tick - 1) return;
         this.FAN$room$tick = this.FAN$room$duration;
 
@@ -275,6 +292,7 @@ export class IORoom {
 
     return this.chat$room$grow(this.name$chatChild(room));
   }
+
   private chat$room$shrink() {
     let rooms = this.rooms$chat().sort((a, b) => -a.localeCompare(b));
 
