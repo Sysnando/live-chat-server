@@ -21,7 +21,7 @@ import {ActivatedRoute} from "@angular/router";
 import {DatePipe} from "@angular/common";
 import {ChatMessage} from "../../../../web-shared/entity/chat-message.model";
 import {ChatWindowModalPage} from "./chat-window-modal/chat-window-modal.component";
-import {QUERY_PARAM_EVENT, QUERY_PARAM_NAME} from "../../../../web-shared/constants";
+import {QUERY_PARAM_EVENT, QUERY_PARAM_NAME, QUERY_PARAM_NAME_UNKNOWN} from "../../../../web-shared/constants";
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 
 const LOG_SIZE = 100;
@@ -76,7 +76,8 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     private io: IOService,
     private route: ActivatedRoute,
   ) {
-    this.paramName = route.snapshot.queryParamMap.get(QUERY_PARAM_NAME) || uniqueNamesGenerator({ dictionaries: [animals, adjectives, colors], separator: ' ', style: 'capital' });
+
+    this.paramName = route.snapshot.queryParamMap.get(QUERY_PARAM_NAME).includes(QUERY_PARAM_NAME_UNKNOWN) ? QUERY_PARAM_NAME_UNKNOWN + uniqueNamesGenerator({ dictionaries: [animals, adjectives, colors], separator: ' ', style: 'capital' }) : route.snapshot.queryParamMap.get(QUERY_PARAM_NAME);
     this.paramEvent = route.snapshot.queryParamMap.get(QUERY_PARAM_EVENT);
     this.paramEvent && this.io.connect();
 
@@ -92,6 +93,7 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
 
   get connected() { return this.socketStatus == SocketStatus.CONNECTED && this.roomSize > 0 }
   get chatDisabled() { return !this.connected || !this.chatInput?.trim().length }
+  get isAuthenticated() { return !this.paramName.startsWith(QUERY_PARAM_NAME_UNKNOWN)};
 
   chatMessage$from(message: ChatMessage) { return message?.from }
   chatMessage$message(message: ChatMessage) { return message?.message }

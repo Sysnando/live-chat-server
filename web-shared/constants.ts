@@ -4,3 +4,4 @@ export const JWT_SECRET = ENV == Environment.PROD ? 'ZTQwZjNhOWVmZmNkYjcxYzM2N2E
 
 export const QUERY_PARAM_EVENT = 'event';
 export const QUERY_PARAM_NAME = 'name';
+export const QUERY_PARAM_NAME_UNKNOWN = 'unknown$_';
