@@ -18,7 +18,7 @@ export class IORoomRecorder {
   private static async BROWSER(): Promise<Browser> {
     return this.BROWSER$ = this.BROWSER$ || puppeteer.launch({
       args: PUPPETEER_ARGS.concat(`--window-size=${ PUPPETEER_SIZE_WIDTH },${ PUPPETEER_SIZE_HEIGHT }`),
-      executablePath: ENV == Environment.PROD ? '/usr/bin/google-chrome-stable' : 'msedge.exe',
+      executablePath: ENV == Environment.PROD ? '/usr/bin/google-chrome-stable' : 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
       defaultViewport: null, // Disable puppeteer's viewport emulation
       headless: ENV == Environment.PROD,
       ignoreHTTPSErrors: true,

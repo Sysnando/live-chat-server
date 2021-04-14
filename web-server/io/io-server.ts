@@ -6,19 +6,20 @@ import {IOUser} from "./io-user";
 import {IOCommand} from "../../web-shared/io";
 import * as http from "http";
 import {RTCAnswer, RTCCandidate, RTCOffer} from "../../web-shared/rtc";
+import {IOTicket} from "./io-ticket";
 
 export class IOServer {
 
   private static INSTANCE$: IOServer;
-  public  static INSTANCE(server?: http.Server) { return IOServer.INSTANCE$ = IOServer.INSTANCE$ || new IOServer(server) }
+  public  static INSTANCE(server?: http.Server, origin?: string[]) { return IOServer.INSTANCE$ = IOServer.INSTANCE$ || new IOServer(server, origin) }
 
   private readonly IO: Server;
 
   private readonly IO$ROOMS: { [key: string]: IORoom } = {};
   private readonly IO$USERS: { [key: string]: IOUser } = {};
 
-  private constructor(server: http.Server) {
-    this.IO = new Server(server);
+  private constructor(server: http.Server, origin: string[]) {
+    this.IO = new Server(server, { cors:{ origin: origin, methods: ["GET"]} });
     this.IO.on('connection', (value: Socket) => this.onConnection(value));
   }
 
@@ -30,6 +31,7 @@ export class IOServer {
 
   private onConnection(socket: Socket) {
     let user = this.IO$USERS[socket.id] = new IOUser(this.IO, socket);
+    let ticket = new IOTicket(this.IO);
 
     socket.on(IOCommand.FAN_LEAVE, () => this.onFanLeave(user));
 
@@ -39,15 +41,19 @@ export class IOServer {
     socket.on(IOCommand.MODERATOR_BAN, (id: string) => this.onModeratorBan(user, id));
     socket.on(IOCommand.MODERATOR_KICK, (id: string) => this.onModeratorKick(user, id));
 
-    socket.on(IOCommand.ROOM_ENTER, (name: string, room: string) => this.onRoomEnter(user, name, this.room$name(room)));
+    socket.on(IOCommand.ROOM_ENTER, (name: string, room: string) => { this.onRoomEnter(user, name, this.room$name(room))});
     socket.on(IOCommand.ROOM_MESSAGE, (message: ChatMessage$JSON) => this.onRoomMessage(user, new ChatMessage(message)));
-
     socket.on(IOCommand.RTC_ANSWER, (value: RTCAnswer) => this.onRtcAnswer(user, value));
+
     socket.on(IOCommand.RTC_CANDIDATE, (value: RTCCandidate) => this.onRtcCandidate(user, value));
     socket.on(IOCommand.RTC_OFFER, (value: RTCOffer) => this.onRtcOffer(user, value));
 
     socket.on(IOCommand.SPECTATOR_ENTER, (room: string) => this.onSpectatorEnter(user, this.room$name(room)));
+
+    socket.on(IOCommand.EVENT_KICK, (OLD: string) => { this.onEventKick(ticket, OLD)});
   }
+
+  private onEventKick(ticket: IOTicket, OLD: string) { ticket.eventKick(OLD) }
 
   private onFanLeave(user: IOUser) { user.fanLeave() }
 

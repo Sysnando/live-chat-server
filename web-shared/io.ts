@@ -23,4 +23,6 @@ export enum IOCommand {
   RTC_PEERS_NAMES = 'rtc.peers.names',
 
   SPECTATOR_ENTER = 'spectator.enter',
+
+  EVENT_KICK = 'event.kick',
 }
