@@ -23,7 +23,7 @@ const APP = express();
       // Redirect all non-file unrecognized routes to index.html, in order to support Angular html5mode routes
       APP.get(/^[^.]*$/, (req, res) => res.sendFile(path.resolve('dist/web/index.html')));
 
-const CORS_ORIGIN = ['https://app.ushowme.tv', 'https://qua.app.ushowme.tv', 'http://localhost:9000'];
+const CORS_ORIGIN = ['https://app.ushowme.tv', 'https://qua-app.ushowme.tv', 'http://localhost:9000'];
 const HTTP_PORT = ENV == Environment.PROD ? 80 : 8080;
 const HTTP = http.createServer(APP);
       HTTP.listen(HTTP_PORT);
