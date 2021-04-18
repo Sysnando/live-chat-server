@@ -24,13 +24,15 @@ const APP = express();
       APP.get(/^[^.]*$/, (req, res) => res.sendFile(path.resolve('dist/web/index.html')));
 
 const CORS_ORIGIN = ['https://app.ushowme.tv', 'https://qua-app.ushowme.tv', 'http://localhost:9000'];
+
+
 const HTTP_PORT = ENV == Environment.PROD ? 80 : 8080;
 const HTTP = http.createServer(APP);
       HTTP.listen(HTTP_PORT);
       HTTP.on('error', error => console.error(error));
       HTTP.on('listening', () => console.log(`HTTP listening on ${ HTTP_PORT }`));
 
-const IO = IOServer.INSTANCE(HTTP, CORS_ORIGIN);
+const IO = IOServer.INSTANCE(HTTP);
 
 // Scheduler
 cron.schedule('0 */2 * * * *', () => IO.update$chat$log()); // Every 2 minutes

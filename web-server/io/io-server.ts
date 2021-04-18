@@ -11,15 +11,15 @@ import {IOTicket} from "./io-ticket";
 export class IOServer {
 
   private static INSTANCE$: IOServer;
-  public  static INSTANCE(server?: http.Server, origin?: string[]) { return IOServer.INSTANCE$ = IOServer.INSTANCE$ || new IOServer(server, origin) }
+  public  static INSTANCE(server?: http.Server) { return IOServer.INSTANCE$ = IOServer.INSTANCE$ || new IOServer(server) }
 
   private readonly IO: Server;
 
   private readonly IO$ROOMS: { [key: string]: IORoom } = {};
   private readonly IO$USERS: { [key: string]: IOUser } = {};
 
-  private constructor(server: http.Server, origin: string[]) {
-    this.IO = new Server(server, { cors:{ origin: origin, methods: ["GET"]} });
+  private constructor(server: http.Server) {
+    this.IO = new Server(server, { cors:{ origin: '*', methods: ["GET"]} });
     this.IO.on('connection', (value: Socket) => this.onConnection(value));
   }
 
