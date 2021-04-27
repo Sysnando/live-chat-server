@@ -13,9 +13,9 @@ export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extend
   private static get POOL(): Pool {
       return this.POOL$ = this.POOL$ || new Pool({
           database: 'ushowme',
-          host: window.location.host.includes('qua') ? 'qa-ushowme.csvxhv0uqncx.eu-west-1.rds.amazonaws.com' : ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'localhost',
-          user: window.location.host.includes('qua') ? 'ushowme' : ENV == Environment.PROD ? 'ushowme' : 'ushowme',
-          password: window.location.host.includes('qua') ? 'Ck7NWQXWAvUjKsh*K4P!' : ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'ushowme',
+          host: location.host.includes('qua') ? 'qa-ushowme.csvxhv0uqncx.eu-west-1.rds.amazonaws.com' : ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'localhost',
+          user: location.host.includes('qua') ? 'ushowme' : ENV == Environment.PROD ? 'ushowme' : 'ushowme',
+          password: location.host.includes('qua') ? 'Ck7NWQXWAvUjKsh*K4P!' : ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'ushowme',
           max: 12,
           min: 4,
       });
