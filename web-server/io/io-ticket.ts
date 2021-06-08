@@ -8,8 +8,8 @@ export class IOTicket {
     this.IO = IO;
   }
 
-  eventKick(OLD: string) {
-    console.log('kick old token: ' + OLD)
-    this.IO.emit(OLD, "Kick the older device");
+  eventKick(oldKey: string, newKey: string) {
+    console.log('kick old: ' + newKey + ' - new:' + newKey)
+    this.IO.emit(oldKey, newKey);
   }
 }

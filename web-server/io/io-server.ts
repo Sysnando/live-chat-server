@@ -50,10 +50,10 @@ export class IOServer {
 
     socket.on(IOCommand.SPECTATOR_ENTER, (room: string) => this.onSpectatorEnter(user, this.room$name(room)));
 
-    socket.on(IOCommand.EVENT_KICK, (OLD: string) => { this.onEventKick(ticket, OLD)});
+    socket.on(IOCommand.EVENT_KICK, (OLD: string, NEW: string) => { this.onEventKick(ticket, OLD, NEW)});
   }
 
-  private onEventKick(ticket: IOTicket, OLD: string) { ticket.eventKick(OLD) }
+  private onEventKick(ticket: IOTicket, OLD: string, NEW: string) { ticket.eventKick(OLD, NEW) }
 
   private onFanLeave(user: IOUser) { user.fanLeave() }
 
