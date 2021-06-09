@@ -58,12 +58,19 @@
             "assets": [
               { "glob": "**/*", "input": "node_modules/amazon-ivs-player/dist/assets", "output": "/assets/amazon-ivs" },
               "web/favicon.ico",
-              "web/assets"
+              "web/assets",
+              {
+                "glob": "*.wasm",
+                "input": "web/assets/deepar/lib",
+                "output": "/"
+              },
             ],
             "styles": [
               "web/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "web/assets/deepar/lib/deepar.js"
+            ]
           },
           "configurations": {
             "production": {

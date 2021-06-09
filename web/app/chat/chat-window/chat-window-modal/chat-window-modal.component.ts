@@ -13,11 +13,14 @@ import {
   ViewChild
 } from '@angular/core';
 import {CameraService} from "../../../shared/services/camera.service";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faTimes, faMask} from "@fortawesome/free-solid-svg-icons";
 import {Subscription, timer} from "rxjs";
 import {switchMap, take} from "rxjs/operators";
 import {IOService} from "../../../shared/services/io.service";
 import {RTCService} from "../../../shared/services/rtc.service";
+import {DeepARService} from "../../../shared/services/deepar.service";
+
+declare var DeepAR: any;
 
 @Component({
   selector: 'app-chat-window-modal',
@@ -28,9 +31,11 @@ import {RTCService} from "../../../shared/services/rtc.service";
 export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   readonly faTimes = faTimes;
+  readonly faMask = faMask;
 
   readonly ChatWindowModalPage = ChatWindowModalPage;
 
+  @ViewChild('canvasPreview')   canvasPreview: ElementRef;
   @ViewChild('cameraPreview')   cameraPreview: ElementRef;
   @ViewChild('cameraPreview2')  cameraPreview2: ElementRef;
 
@@ -47,6 +52,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   constructor(
     private camera: CameraService,
     private changeDetector: ChangeDetectorRef,
+    private deepAR: DeepARService,
     private io: IOService,
     private rtc: RTCService,
   ) {
@@ -89,6 +95,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
     switch (this.modalPage = page) {
       case ChatWindowModalPage.SETUP_CAMERA:
         this.camera.start(this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.deepAR.start(this.cameraPreview.nativeElement, this.canvasPreview.nativeElement);
         break;
       case ChatWindowModalPage.STREAM_START:
         this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
@@ -99,6 +106,14 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
 
         break;
     }
+  }
+
+  onSwitchEffect(mask: string) {
+    this.deepAR.onSwitchEffect(mask);
+  }
+
+  onCleanEffect() {
+    this.deepAR.onCleanEffect();
   }
 
   onCountdown(value: number) {

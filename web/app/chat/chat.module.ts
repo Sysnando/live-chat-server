@@ -5,6 +5,7 @@ import {SharedModule} from "../shared/shared.module";
 import { ChatWindowModalComponent } from './chat-window/chat-window-modal/chat-window-modal.component';
 import {FormsModule} from "@angular/forms";
 import {ChatWindowVideoComponent} from "./chat-window/chat-window-video/chat-window-video.component";
+import {IvyCarouselModule} from "angular-responsive-carousel";
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {ChatWindowVideoComponent} from "./chat-window/chat-window-video/chat-win
     FormsModule,
     SharedModule,
     ChatRoutingModule,
+    IvyCarouselModule,
   ]
 })
 export class ChatModule { }
