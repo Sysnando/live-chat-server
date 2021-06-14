@@ -1,4 +1,5 @@
 import {Injectable} from "@angular/core";
+import {BehaviorSubject} from "rxjs";
 declare var DeepAR: any;
 
 @Injectable({ providedIn: 'root'})
@@ -6,9 +7,13 @@ export class DeepARService {
 
   constructor() {}
 
+  private canvasStream = new BehaviorSubject<MediaStream>(undefined);
   private deepAR: any;
 
-  start(video: HTMLVideoElement, canvas: HTMLCanvasElement) {
+  get canvasStream$() { return this.canvasStream.asObservable() }
+  get masksPath() { return '/assets/deepar/effects/masks/' }
+
+  start(video: HTMLVideoElement, canvas: CanvasElement, effect?: string) {
 
     this.deepAR = DeepAR({
       licenseKey: '2527787aca0aae55d4a5a07c547bbf4f2c25b92e9ebb8f39587bca34cb2dc6cd6668c93103aeff34',
@@ -17,27 +22,28 @@ export class DeepARService {
       canvas: canvas,
       numberOfFaces: 2, // how many faces we want to track min 1, max 4
       onInitialize: function () {
-        // start video immediately after the initalization, mirror = true
-        //this.startVideo(true);
-
         //Used to pass the HTMLVideoElement to the DeepAR SDK. The SDK will grab frames
         //from the video element and render the frames with masks/filters to the canvas.
         // This method should be used instead of startVideo when you want to handle getUserMedia
         //outside of the SDK or you need to apply the masks to any video stream.
         this.setVideoElement(video, true)
+
+        if(effect)
+          this.switchEffect(0, 'slot', this.masksPath + effect, () => {
+            // effect loaded
+          })
       }
     });
 
     // download the face tracking model
     this.deepAR.downloadFaceTrackingModel('/assets/deepar/models/models-68-extreme.bin');
 
-  }
+    this.canvasStream.next(canvas.captureStream(25));
 
-  stop() {
   }
 
   onSwitchEffect(effectName: string) {
-    this.deepAR.switchEffect(0, 'slot', '/assets/deepar/effects/masks/' + effectName, () => {
+    this.deepAR.switchEffect(0, 'slot', this.masksPath + effectName, () => {
       // effect loaded
     });
   }
@@ -45,4 +51,8 @@ export class DeepARService {
   onCleanEffect() {
     this.deepAR.clearEffect('slot');
   }
+}
+
+interface CanvasElement extends HTMLCanvasElement {
+  captureStream(frameRate: number): MediaStream;
 }

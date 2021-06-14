@@ -20,8 +20,6 @@ import {IOService} from "../../../shared/services/io.service";
 import {RTCService} from "../../../shared/services/rtc.service";
 import {DeepARService} from "../../../shared/services/deepar.service";
 
-declare var DeepAR: any;
-
 @Component({
   selector: 'app-chat-window-modal',
   templateUrl: './chat-window-modal.component.html',
@@ -36,6 +34,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   readonly ChatWindowModalPage = ChatWindowModalPage;
 
   @ViewChild('canvasPreview')   canvasPreview: ElementRef;
+  @ViewChild('canvasPreview2')  canvasPreview2: ElementRef;
   @ViewChild('cameraPreview')   cameraPreview: ElementRef;
   @ViewChild('cameraPreview2')  cameraPreview2: ElementRef;
 
@@ -46,6 +45,9 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
 
   @Output()                     modalClose = new EventEmitter<boolean>();
   @Input()                      modalPage: ChatWindowModalPage;
+
+  @Input()                      effect: string;
+  @Output()                     effectChanged = new EventEmitter<string>();
 
   private                       subscriptionCoutdown: Subscription;
 
@@ -99,6 +101,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
         break;
       case ChatWindowModalPage.STREAM_START:
         this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.deepAR.start(this.cameraPreview2.nativeElement, this.canvasPreview2.nativeElement, this.effect)
 
         this.subscriptionCoutdown = this.io.fanCountdown$
           .pipe(take(1), switchMap(value => timer(0, 1000)
@@ -109,10 +112,12 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   onSwitchEffect(mask: string) {
+    this.effectChanged.emit(mask);
     this.deepAR.onSwitchEffect(mask);
   }
 
   onCleanEffect() {
+    this.effectChanged.emit(undefined);
     this.deepAR.onCleanEffect();
   }
 

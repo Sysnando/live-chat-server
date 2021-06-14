@@ -39,6 +39,8 @@ export class PageVideoCapture {
 
     const collector = await ScreencastFrameCollector.create(page, options);
     const queue = new SortedFrameQueue();
+
+    //TODO Remove porque isto é somente para testar no windows
     const writer = await VideoWriter.create(savePath, options);
 
     const capture = new PageVideoCapture({ collector, queue, page, writer });

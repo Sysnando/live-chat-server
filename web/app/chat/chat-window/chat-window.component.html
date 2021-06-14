@@ -9,7 +9,7 @@
     </div>
 
     <!-- Modal -->
-    <app-chat-window-modal *ngIf="modalOpen" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>
+    <app-chat-window-modal *ngIf="modalOpen" [effect]="effect" (effectChanged)="onModelEffect($event)" [modalPage]="modalPage" (modalClose)="onModalClose($event)"></app-chat-window-modal>
 
     <!-- Actions -->
     <div *ngIf="isAuthenticated" class="d-flex align-items-center justify-content-between pt-2">

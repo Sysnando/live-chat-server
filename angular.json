@@ -47,7 +47,8 @@
           "options": {
             "allowedCommonJsDependencies": [
               "amazon-ivs-player",
-              "socket.io-client"
+              "socket.io-client",
+              "socket.io"
             ],
             "outputPath": "dist/web",
             "index": "web/index.html",
@@ -91,7 +92,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",

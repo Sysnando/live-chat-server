@@ -4,6 +4,7 @@ import {CameraService} from "./camera.service";
 import {Subject, Subscription} from "rxjs";
 import {RTCAnswer, RTCCandidate, RTCOffer} from "../../../../web-shared/rtc";
 import {Utils} from "../../../../web-shared/utils";
+import {DeepARService} from "./deepar.service";
 
 // Thanks https://webrtc.ventures/2020/04/the-basics-of-a-webrtc-broadcasting-app/
 @Injectable({ providedIn: 'root' })
@@ -25,13 +26,15 @@ export class RTCService {
 
   constructor(
     private camera: CameraService,
+    private deepAR: DeepARService,
     private io: IOService,
   ) {
     this.subscriptionAnswers = this.io.rtcAnswers$.subscribe(value => this.onAnswer(value));
     this.subscriptionCandidates = this.io.rtcCandidates$.subscribe(value => this.onCandidate(value));
     this.subscriptionOffers = this.io.rtcOffers$.subscribe(value => this.onOffer(value));
     this.subscriptionPeers = this.io.rtcPeers$.subscribe(value => this.onPeers(value));
-    this.subscriptionVideoStream = this.camera.videoStream$.subscribe(value => this.onVideoStream(value));
+    this.subscriptionVideoStream = this.deepAR.canvasStream$.subscribe(value => this.onVideoStream(value));
+    // this.subscriptionVideoStream = this.camera.videoStream$.subscribe(value => this.onVideoStream(value));
   }
 
   get update$() { return this.UPDATE.asObservable() }

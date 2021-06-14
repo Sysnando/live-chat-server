@@ -60,6 +60,7 @@
         <div class="card border border-primary overflow-hidden mt-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
           <video #cameraPreview2 autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
+          <canvas #canvasPreview2 class="position-absolute" style="max-height: 100%"></canvas>
         </div>
       </div>
 
@@ -99,7 +100,7 @@
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
 
-          <carousel height="50" arrows="false" freeScroll="true" objectFit="contain">
+          <carousel>
               <div class="carousel-cell">
                   <div (click)="onCleanEffect()" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
@@ -107,31 +108,31 @@
                   </div>
               </div>
               <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('aviators')" style="background-color: gray; border: thick #DA7443; border-radius=7px; width: 50px; height: 50px">
+                  <div (click)="onSwitchEffect('aviators')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
                       <span>aviators</span>
                   </div>
               </div>
               <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('dalmatian')" style="background-color: gray; border: thick #DA7443; border-radius=7px; width: 50px; height: 50px">
+                  <div (click)="onSwitchEffect('dalmatian')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
                       <span>dalmatian</span>
                   </div>
               </div>
               <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('flowers')" style="background-color: gray; border: thick #DA7443; border-radius=7px; width: 50px; height: 50px">
+                  <div (click)="onSwitchEffect('flowers')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
                       <span>flowers</span>
                   </div>
               </div>
               <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('bears')" style="background-color: gray; border: thick #DA7443; border-radius=7px; width: 50px; height: 50px">
+                  <div (click)="onSwitchEffect('bears')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
                       <span>bears</span>
                   </div>
               </div>
               <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('koala')" style="background-color: gray; border: thick #DA7443; border-radius=7px; width: 50px; height: 50px">
+                  <div (click)="onSwitchEffect('koala')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
                       <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
                       <span>koala</span>
                   </div>

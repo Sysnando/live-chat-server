@@ -49,6 +49,7 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
 
                         modalOpen: boolean;
                         modalPage: ChatWindowModalPage;
+                        effect: string;
 
                         paramEvent: string;
                         paramName: string;
@@ -148,6 +149,11 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
     this.changeDetector.markForCheck();
 
     this.busy$queue = success;
+  }
+
+  onModelEffect(effect: string) {
+    console.log('parent: ', effect)
+    this.effect = effect;
   }
 
   onModeratorAction(value: ModeratorAction) {
