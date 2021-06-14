@@ -15,6 +15,8 @@ export class DeepARService {
 
   start(video: HTMLVideoElement, canvas: CanvasElement, effect?: string) {
 
+    let path = this.masksPath;
+
     this.deepAR = DeepAR({
       licenseKey: '2527787aca0aae55d4a5a07c547bbf4f2c25b92e9ebb8f39587bca34cb2dc6cd6668c93103aeff34',
       canvasWidth: 640,
@@ -29,7 +31,7 @@ export class DeepARService {
         this.setVideoElement(video, true)
 
         if(effect)
-          this.switchEffect(0, 'slot', this.masksPath + effect, () => {
+          this.switchEffect(0, 'slot', path + effect, () => {
             // effect loaded
           })
       }
