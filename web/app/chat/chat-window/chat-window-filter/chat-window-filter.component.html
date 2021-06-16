@@ -1,0 +1,33 @@
+<!--<carousel
+        [height]="properties.height"
+        [width]="properties.width"
+        [cellWidth]="properties.cellWidth"
+        [cellsToShow]="properties.cellsToShow"
+        [cellsToScroll]="properties.cellsToScroll"
+        [loop]="properties.loop"
+        [lightDOM]="properties.lightDOM"
+        [overflowCellsLimit]="properties.overflowCellsLimit"
+        [freeScroll]="properties.freeScroll"
+        [autoplay]="properties.autoplay"
+        [autoplayInterval]="properties.autoplayInterval"
+        [pauseOnHover]="properties.pauseOnHover"
+        [dots]="properties.dots"
+        [objectFit]="properties.objectFit"
+        [margin]="properties.margin"
+        [minSwipeDistance]="properties.minSwipeDistance"
+        [transitionDuration]="properties.transitionDuration"
+        [transitionTimingFunction]="properties.transitionTimingFunction"
+        [counter]="properties.counter"
+        [counterSeparator]="properties.counterSeparator"
+        [borderRadius]="properties.borderRadius"
+        [arrows]="properties.arrows"
+        [arrowsOutside]="properties.arrowsOutside"
+        [arrowsTheme]="properties.arrowsTheme"
+>-->
+
+<carousel [height]="50" [cellWidth]="50" [arrows]="false">
+    <div *ngFor="let card of cards" class="carousel-cell" (click)="card.click()" style="background-color: crimson; border-radius: 5px">
+        <!--img [src]="card.thumbPath"-->
+        <span>{{card.name}}</span>
+    </div>
+</carousel>
