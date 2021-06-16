@@ -19,6 +19,7 @@ import {switchMap, take} from "rxjs/operators";
 import {IOService} from "../../../shared/services/io.service";
 import {RTCService} from "../../../shared/services/rtc.service";
 import {DeepARService} from "../../../shared/services/deepar.service";
+import {CarrouselCards} from "../chat-window-filter/chat-window-filter.component";
 
 @Component({
   selector: 'app-chat-window-modal',
@@ -60,6 +61,8 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   ) {
     this.rtc.reset();
   }
+
+  get carrouselProperties() { return new CarrouselProperties(); }
 
   ngAfterViewInit() {
     this.initialized = true;
@@ -111,22 +114,83 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
     }
   }
 
-  onSwitchEffect(mask: string) {
-    this.effectChanged.emit(mask);
-    this.deepAR.onSwitchEffect(mask);
-  }
-
-  onCleanEffect() {
-    this.effectChanged.emit(undefined);
-    this.deepAR.onCleanEffect();
-  }
-
   onCountdown(value: number) {
+    console.log(value, this.countdownStart)
     this.countdown = this.countdownStart - value - 1;
+    console.log(this.countdown)
     this.changeDetector.markForCheck();
   }
 
+  defaultFilters: CarrouselCards[] =
+    [
+      {
+        click: () => {
+          this.effectChanged.emit(undefined);
+          return this.deepAR.onCleanEffect();
+        },
+        name: 'X',
+        thumbPath: this.deepAR.masksPath + 'clean'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('aviators');
+          return this.deepAR.onSwitchEffect('aviators')
+        },
+        name: 'aviators',
+        thumbPath: this.deepAR.masksPath + 'aviators'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('beard');
+          return this.deepAR.onSwitchEffect('beard')
+        },
+        name: 'beard',
+        thumbPath: this.deepAR.masksPath + 'beard'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('dalmatian');
+          return this.deepAR.onSwitchEffect('dalmatian')
+        },
+        name: 'dalmatian',
+        thumbPath: this.deepAR.masksPath + 'dalmatian'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('flowers');
+          return this.deepAR.onSwitchEffect('flowers')
+        },
+        name: 'flowers',
+        thumbPath: this.deepAR.masksPath + 'flowers'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('koala');
+          return this.deepAR.onSwitchEffect('koala')
+        },
+        name: 'koala',
+        thumbPath: this.deepAR.masksPath + 'koala'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('lion');
+          return this.deepAR.onSwitchEffect('lion')
+        },
+        name: 'lion',
+        thumbPath: this.deepAR.masksPath + 'lion'
+      },
+      {
+        click: () => {
+          this.effectChanged.emit('teddycigar');
+          return this.deepAR.onSwitchEffect('teddycigar')
+        },
+        name: 'teddycigar',
+        thumbPath: this.deepAR.masksPath + 'teddycigar'
+      },
+    ]
+
 }
+
 
 export enum ChatWindowModalPage {
   SETUP_ACCEPT,
@@ -136,4 +200,12 @@ export enum ChatWindowModalPage {
   STREAM_STOP,
   STREAM_STOP_BANNED,
   STREAM_STOP_KICKED,
+}
+
+
+class CarrouselProperties implements CarrouselProperties {
+  height: 60;
+  width: 50;
+  borderRadius: 7;
+  arrows: false;
 }

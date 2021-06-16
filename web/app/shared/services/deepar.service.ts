@@ -45,13 +45,11 @@ export class DeepARService {
   }
 
   onSwitchEffect(effectName: string) {
-    this.deepAR.switchEffect(0, 'slot', this.masksPath + effectName, () => {
-      // effect loaded
-    });
+    return this.deepAR.switchEffect(0, 'slot', this.masksPath + effectName, () => {});
   }
 
   onCleanEffect() {
-    this.deepAR.clearEffect('slot');
+    return this.deepAR.clearEffect('slot');
   }
 }
 

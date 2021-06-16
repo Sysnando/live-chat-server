@@ -6,12 +6,14 @@ import { ChatWindowModalComponent } from './chat-window/chat-window-modal/chat-w
 import {FormsModule} from "@angular/forms";
 import {ChatWindowVideoComponent} from "./chat-window/chat-window-video/chat-window-video.component";
 import {IvyCarouselModule} from "angular-responsive-carousel";
+import { ChatWindowFilterComponent } from './chat-window/chat-window-filter/chat-window-filter.component';
 
 @NgModule({
   declarations: [
     ChatWindowComponent,
     ChatWindowModalComponent,
     ChatWindowVideoComponent,
+    ChatWindowFilterComponent,
   ],
   imports: [
     FormsModule,

@@ -152,7 +152,6 @@ export class ChatWindowComponent implements OnDestroy, OnInit {
   }
 
   onModelEffect(effect: string) {
-    console.log('parent: ', effect)
     this.effect = effect;
   }
 

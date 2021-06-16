@@ -1,46 +1,54 @@
 <div class="modal-dialog" style="max-width: initial">
-  <div class="modal-content" style="max-width: 640px; width: 90vw">
+  <div class="container modal-content" style="max-width: 640px; width: 90vw">
     <!-- Header -->
     <div class="modal-header align-items-center border-0">
       <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center text-primary w-100" style="left: 0">Top Fans</h4>
-      <button class="close" (click)="onClickClose()">
+      <button class="close text-primary" (click)="onClickClose()">
         <fa-icon [icon]="faTimes"></fa-icon>
       </button>
     </div>
 
     <!-- Body -->
-    <div class="modal-body py-0">
+    <div class="modal-body">
 
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
-        <p class="text-justify">Show how much FUN <b>U</b>’r havin’!<br/>Connect your webcam and give <b>U</b>’r best moooooves</p>
-        <p class="text-justify">To make this experience positive and safe to all, you must respect the Code of Conduct in place. </p>
+        <h4 class="font-weight-bolder text-center text-primary">Interations</h4>
+        <p class="text-center">Express yourself and interact on Top Fans and live chat.</p>
+        <p class="text-center">To make it a positive and safe for all we monitor content in real time.</p>
 
         <h4 class="font-weight-bolder text-center text-primary">Code of Conduct</h4>
         <h6 class="font-weight-bolder text-center">It’s not allowed</h6>
 
-        <ul class="text-justify pl-0">
-          <li>Nudity (partial or total)</li>
-          <li>Obscene or pornographic content</li>
-          <li>Violence, self-harm, hate speech or any form of discrimination</li>
-          <li>Unsolicited advertising, promotional materials or SPAM</li>
-          <li>Interfering with or disrupting the services or bypassing any security measures or restrictions that we have put in place</li>
+        <ul class="text-justify pl-0" id="scrollbar" class="scrollbar">
+          <li>Nudity (partial or total).</li>
+          <li>Obscene or/or pornographic content.</li>
+          <li>Violence, discrimination and hate content.</li>
+          <li>Racism.</li>
+          <li>Political, religious or conspiracy theories.</li>
+          <li>Unsolicited third-party advertising.</li>
+          <li>Hacking or injecting malicious code.</li>
         </ul>
       </div>
 
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
-        <p class="text-justify">Grant camera permission to test your camera before participating.</p>
+
+        <p class="text-center">Allow Camera access to view yourself <br/> and use our cool filters.</p>
 
         <div class="card border border-primary overflow-hidden mb-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
           <video #cameraPreview autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
-
           <canvas #canvasPreview class="position-absolute" style="max-height: 100%"></canvas>
         </div>
 
-        <p class="text-justify">If you see yourself on screen, click on End Test below.</p>
-        <p class="text-justify">We will let you know moments before to join in again </p>
+        <div class="py-3">
+          <app-chat-window-filter [properties]="carrouselProperties" [cards]="defaultFilters"></app-chat-window-filter>
+        </div>
+
+        <p class="text-center">If you see yourself on screen, click on End Test below.</p>
+        <p class="text-center">We will let you know moments before to join in again </p>
+
       </div>
 
       <!-- 2. Ready -->
@@ -89,7 +97,9 @@
 
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
-        <p class="text-center text-primary">By pressing next you are accepting our Terms & Conditions</p>
+
+        <p class="text-center text-primary">Scroll down and read all the code of conduct</p>
+        <p class="text-center">By pressing next you are accepting our <a href="https://ushowme.tv/termsandconditions/" class="text-primary" target="_blank">Terms & Conditions</a></p>
 
         <div class="d-flex justify-content-between">
           <button class="btn btn-outline-primary" (click)="onClickClose()">Close</button>
@@ -99,50 +109,9 @@
 
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
-
-          <carousel>
-              <div class="carousel-cell">
-                  <div (click)="onCleanEffect()" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>clean</span>
-                  </div>
-              </div>
-              <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('aviators')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>aviators</span>
-                  </div>
-              </div>
-              <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('dalmatian')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>dalmatian</span>
-                  </div>
-              </div>
-              <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('flowers')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>flowers</span>
-                  </div>
-              </div>
-              <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('bears')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>bears</span>
-                  </div>
-              </div>
-              <div class="carousel-cell">
-                  <div (click)="onSwitchEffect('koala')" style="background-color: gray; border: thick #DA7443; border-radius:7px; width: 50px; height: 50px">
-                      <!-- fa-icon class="mr-2" [icon]="faMask"></fa-icon-->
-                      <span>koala</span>
-                  </div>
-              </div>
-          </carousel>
-
-
         <div class="d-flex justify-content-between">
           <button class="btn btn-outline-primary" (click)="onClickPage(0)">Back</button>
-          <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">End Test</button>
+          <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">End Test and Save</button>
         </div>
       </div>
 
