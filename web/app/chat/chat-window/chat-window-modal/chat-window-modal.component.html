@@ -2,7 +2,7 @@
   <div class="container modal-content" style="max-width: 640px; width: 90vw">
     <!-- Header -->
     <div class="modal-header align-items-center border-0">
-      <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center text-primary w-100" style="left: 0">Top Fans</h4>
+      <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center w-100" style="left: 0">Top Fan</h4>
       <button class="close text-primary" (click)="onClickClose()">
         <fa-icon [icon]="faTimes"></fa-icon>
       </button>
@@ -46,8 +46,10 @@
           <app-chat-window-filter [properties]="carrouselProperties" [cards]="defaultFilters"></app-chat-window-filter>
         </div>
 
-        <p class="text-center">If you see yourself on screen, click on End Test below.</p>
-        <p class="text-center">We will let you know moments before to join in again </p>
+        <p class="text-center">
+            You will have 10 seconds to show your best move.<br/>
+            We will let you know 20 seconds before yout turn
+        </p>
 
       </div>
 
@@ -59,8 +61,8 @@
 
       <!-- 3. Stream Start -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_START }">
-        <h4 *ngIf="countdown" class="font-weight-bolder text-center mb-0">Get Ready!</h4>
-        <h2 *ngIf="countdown" class="font-weight-bolder text-center">{{ countdown }}s</h2>
+        <h4 *ngIf="countdown" class="font-weight-bolder text-center mb-0">GET READY!</h4>
+        <h1 *ngIf="countdown" class="font-weight-bolder text-center text-primary">00:{{ countdown }}</h1>
 
         <h4 *ngIf="countdown == 0" class="font-weight-bolder text-center mb-0"><b>U</b>’r Live</h4>
         <h2 *ngIf="countdown == 0" class="font-weight-bolder text-center">- Give <b>U</b>’r best moves!</h2>
