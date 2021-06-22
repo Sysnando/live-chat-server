@@ -115,9 +115,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   onCountdown(value: number) {
-    console.log(value, this.countdownStart)
     this.countdown = this.countdownStart - value - 1;
-    console.log(this.countdown)
     this.changeDetector.markForCheck();
   }
 
@@ -133,20 +131,28 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
       },
       {
         click: () => {
+          this.effectChanged.emit('5g');
+          return this.deepAR.onSwitchEffect('5g')
+        },
+        name: '5G',
+        thumbPath: this.deepAR.masksPath + '5g'
+      },
+      {
+        click: () => {
           this.effectChanged.emit('aviators');
           return this.deepAR.onSwitchEffect('aviators')
         },
         name: 'aviators',
         thumbPath: this.deepAR.masksPath + 'aviators'
       },
-      {
-        click: () => {
-          this.effectChanged.emit('beard');
-          return this.deepAR.onSwitchEffect('beard')
-        },
-        name: 'beard',
-        thumbPath: this.deepAR.masksPath + 'beard'
-      },
+      // {
+      //   click: () => {
+      //     this.effectChanged.emit('beard');
+      //     return this.deepAR.onSwitchEffect('beard')
+      //   },
+      //   name: 'beard',
+      //   thumbPath: this.deepAR.masksPath + 'beard'
+      // },
       {
         click: () => {
           this.effectChanged.emit('dalmatian');
@@ -163,14 +169,14 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
         name: 'flowers',
         thumbPath: this.deepAR.masksPath + 'flowers'
       },
-      {
-        click: () => {
-          this.effectChanged.emit('koala');
-          return this.deepAR.onSwitchEffect('koala')
-        },
-        name: 'koala',
-        thumbPath: this.deepAR.masksPath + 'koala'
-      },
+      // {
+      //   click: () => {
+      //     this.effectChanged.emit('koala');
+      //     return this.deepAR.onSwitchEffect('koala')
+      //   },
+      //   name: 'koala',
+      //   thumbPath: this.deepAR.masksPath + 'koala'
+      // },
       {
         click: () => {
           this.effectChanged.emit('lion');
