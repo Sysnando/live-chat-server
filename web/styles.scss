@@ -35,3 +35,10 @@ input { background: transparent !important }
   text-align: left;
   white-space: nowrap;
 }
+
+@media only screen and (max-width: 600px) {
+  p, span, li {
+    font-size: 12px;
+    line-height: 1.35 !important;
+  };
+}

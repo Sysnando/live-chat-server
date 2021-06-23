@@ -40,6 +40,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   @ViewChild('cameraPreview2')  cameraPreview2: ElementRef;
 
                                 countdown: number;
+                                countdownFake: number;
                                 countdownStart: number;
 
                                 initialized: boolean;
@@ -63,6 +64,18 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   get carrouselProperties() { return new CarrouselProperties(); }
+
+  onStartCountdownFake(value:  number) {
+      this.countdownFake = value;
+      const interval = setInterval(() => {
+        this.countdownFake--;
+
+        if (this.countdownFake < 0 ) {
+          clearInterval(interval);
+        }
+        this.changeDetector.detectChanges();
+      }, 1000);
+  }
 
   ngAfterViewInit() {
     this.initialized = true;
@@ -116,6 +129,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
 
   onCountdown(value: number) {
     this.countdown = this.countdownStart - value - 1;
+    if(this.countdown == 0) this.onStartCountdownFake(20);
     this.changeDetector.markForCheck();
   }
 
@@ -177,14 +191,14 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
       //   name: 'koala',
       //   thumbPath: this.deepAR.masksPath + 'koala'
       // },
-      {
-        click: () => {
-          this.effectChanged.emit('lion');
-          return this.deepAR.onSwitchEffect('lion')
-        },
-        name: 'lion',
-        thumbPath: this.deepAR.masksPath + 'lion'
-      },
+      // {
+      //   click: () => {
+      //     this.effectChanged.emit('lion');
+      //     return this.deepAR.onSwitchEffect('lion')
+      //   },
+      //   name: 'lion',
+      //   thumbPath: this.deepAR.masksPath + 'lion'
+      // },
       {
         click: () => {
           this.effectChanged.emit('teddycigar');

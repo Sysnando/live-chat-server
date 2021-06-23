@@ -1,6 +1,9 @@
 @import "../../../../_variables";
 
 :host {
+  @media only screen and (max-width: 600px) {
+    align-items: start !important;
+  }
   display: flex;
   align-items: center;
   justify-content: center;

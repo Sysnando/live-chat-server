@@ -1,5 +1,5 @@
 <div class="modal-dialog" style="max-width: initial">
-  <div class="container modal-content" style="max-width: 640px; width: 90vw">
+  <div class="modal-content" style="max-width: 640px; width: 90vw">
     <!-- Header -->
     <div class="modal-header align-items-center border-0">
       <h4 class="flex-grow-1 font-weight-bolder mb-0 position-absolute text-center w-100" style="left: 0">Top Fan</h4>
@@ -14,8 +14,10 @@
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
         <h4 class="font-weight-bolder text-center text-primary">Interations</h4>
-        <p class="text-center">Express yourself and interact on Top Fans and live chat.</p>
-        <p class="text-center">To make it a positive and safe for all we monitor content in real time.</p>
+        <p class="text-center">
+            Express yourself and interact on Top Fans and live chat.<br/>
+            To make it a positive and safe for all we monitor content in real time.
+        </p>
 
         <h4 class="font-weight-bolder text-center text-primary">Code of Conduct</h4>
         <h6 class="font-weight-bolder text-center">It’s not allowed</h6>
@@ -34,22 +36,17 @@
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
 
-        <p class="text-center">Allow Camera access to view yourself <br/> and use our cool filters.</p>
+        <p class="text-center" style="line-height: 1">Allow Camera access to view yourself <br/> and use our cool filters.</p>
 
         <div class="card border border-primary overflow-hidden mb-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
-          <video #cameraPreview autoplay muted playsinline class="position-absolute" style="max-height: 100%"></video>
+          <video #cameraPreview autoplay muted playsinline class="vjs-fluid vjs-1-1 position-absolute" style="max-height: 100%"></video>
           <canvas #canvasPreview class="position-absolute" style="max-height: 100%"></canvas>
         </div>
 
-        <div class="py-3">
+        <div>
           <app-chat-window-filter [properties]="carrouselProperties" [cards]="defaultFilters"></app-chat-window-filter>
         </div>
-
-        <p class="text-center">
-            You will have 10 seconds to show your best move.<br/>
-            We will let you know 20 seconds before yout turn
-        </p>
 
       </div>
 
@@ -62,10 +59,11 @@
       <!-- 3. Stream Start -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.STREAM_START }">
         <h4 *ngIf="countdown" class="font-weight-bolder text-center mb-0">GET READY!</h4>
-        <h1 *ngIf="countdown" class="font-weight-bolder text-center text-primary">00:{{ countdown }}</h1>
+        <h1 *ngIf="countdown" class="font-weight-bolder text-center text-primary">00:{{ countdown.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) }}</h1>
 
         <h4 *ngIf="countdown == 0" class="font-weight-bolder text-center mb-0"><b>U</b>’r Live</h4>
         <h2 *ngIf="countdown == 0" class="font-weight-bolder text-center">- Give <b>U</b>’r best moves!</h2>
+        <h1 *ngIf="countdown == 0" class="font-weight-bolder text-center text-primary">00:{{ countdownFake.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) }}</h1>
 
         <div class="card border border-primary overflow-hidden mt-3 position-relative">
           <div style="padding-bottom: 56.25%"></div>
@@ -95,7 +93,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="modal-footer border-0 d-block pt-3">
+    <div class="modal-footer border-0 d-block">
 
       <!-- 0. Coduct of Conduct -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_ACCEPT }">
@@ -111,9 +109,20 @@
 
       <!-- 1. Camera Setup -->
       <div [ngClass]="{ 'd-none': modalPage != ChatWindowModalPage.SETUP_CAMERA }">
+
+        <p class="text-center">
+            Play around with the cool filters and select one for you.<br/>
+            We'll let you know 20 seconds before your turn.
+        </p>
+
+
         <div class="d-flex justify-content-between">
-          <button class="btn btn-outline-primary" (click)="onClickPage(0)">Back</button>
-          <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">End Test and Save</button>
+            <div class="pr-1">
+                <button class="btn btn-outline-primary" (click)="onClickPage(0)">Back</button>
+            </div>
+            <div>
+                <button class="btn btn-primary" (click)="onClickPage(2)" [disabled]="!cameraPreview.srcObject">Save</button>
+            </div>
         </div>
       </div>
 
