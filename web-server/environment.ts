@@ -1,5 +1,6 @@
 export enum Environment {
   DEV,
+  QA,
   PROD,
 }
 

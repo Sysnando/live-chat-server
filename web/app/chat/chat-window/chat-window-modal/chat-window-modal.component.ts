@@ -112,12 +112,12 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
 
     switch (this.modalPage = page) {
       case ChatWindowModalPage.SETUP_CAMERA:
-        this.camera.start(this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
-        this.deepAR.start(this.cameraPreview.nativeElement, this.canvasPreview.nativeElement);
+        // this.camera.start(this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.deepAR.start(null, this.canvasPreview.nativeElement);
         break;
       case ChatWindowModalPage.STREAM_START:
-        this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
-        this.deepAR.start(this.cameraPreview2.nativeElement, this.canvasPreview2.nativeElement, this.effect)
+        // this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
+        this.deepAR.start(null, this.canvasPreview2.nativeElement, this.effect)
 
         this.subscriptionCoutdown = this.io.fanCountdown$
           .pipe(take(1), switchMap(value => timer(0, 1000)
@@ -141,71 +141,71 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
           return this.deepAR.onCleanEffect();
         },
         name: 'X',
-        thumbPath: this.deepAR.masksPath + 'clean'
+        thumbPath: this.deepAR.masksPath + '/thumb/clean.svg'
       },
       {
         click: () => {
           this.effectChanged.emit('5g');
-          return this.deepAR.onSwitchEffect('5g')
+          return this.deepAR.onSwitchEffect('/masks/5g')
         },
         name: '5G',
-        thumbPath: this.deepAR.masksPath + '5g'
+        thumbPath: this.deepAR.masksPath + '/thumb/5g.svg'
       },
       {
         click: () => {
           this.effectChanged.emit('aviators');
-          return this.deepAR.onSwitchEffect('aviators')
+          return this.deepAR.onSwitchEffect('/masks/aviators')
         },
         name: 'aviators',
-        thumbPath: this.deepAR.masksPath + 'aviators'
+        thumbPath: this.deepAR.masksPath + '/thumb/aviators.svg'
       },
       // {
       //   click: () => {
       //     this.effectChanged.emit('beard');
-      //     return this.deepAR.onSwitchEffect('beard')
+      //     return this.deepAR.onSwitchEffect('/masks/beard')
       //   },
       //   name: 'beard',
-      //   thumbPath: this.deepAR.masksPath + 'beard'
+      //   thumbPath: this.deepAR.masksPath + '/thumb/beard.svg'
       // },
       {
         click: () => {
           this.effectChanged.emit('dalmatian');
-          return this.deepAR.onSwitchEffect('dalmatian')
+          return this.deepAR.onSwitchEffect('/masks/dalmatian')
         },
         name: 'dalmatian',
-        thumbPath: this.deepAR.masksPath + 'dalmatian'
+        thumbPath: this.deepAR.masksPath + '/thumb/dalmatian.svg'
       },
       {
         click: () => {
           this.effectChanged.emit('flowers');
-          return this.deepAR.onSwitchEffect('flowers')
+          return this.deepAR.onSwitchEffect('/masks/flowers')
         },
         name: 'flowers',
-        thumbPath: this.deepAR.masksPath + 'flowers'
+        thumbPath: this.deepAR.masksPath + '/thumb/flowers.svg'
       },
       // {
       //   click: () => {
       //     this.effectChanged.emit('koala');
-      //     return this.deepAR.onSwitchEffect('koala')
+      //     return this.deepAR.onSwitchEffect('/masks/koala')
       //   },
       //   name: 'koala',
-      //   thumbPath: this.deepAR.masksPath + 'koala'
-      // },
-      // {
-      //   click: () => {
-      //     this.effectChanged.emit('lion');
-      //     return this.deepAR.onSwitchEffect('lion')
-      //   },
-      //   name: 'lion',
-      //   thumbPath: this.deepAR.masksPath + 'lion'
+      //   thumbPath: this.deepAR.masksPath + '/thumb/koala.svg'
       // },
       {
         click: () => {
+          this.effectChanged.emit('lion');
+          return this.deepAR.onSwitchEffect('/masks/lion')
+        },
+        name: 'lion',
+        thumbPath: this.deepAR.masksPath + '/thumb/lion.svg'
+      },
+      {
+        click: () => {
           this.effectChanged.emit('teddycigar');
-          return this.deepAR.onSwitchEffect('teddycigar')
+          return this.deepAR.onSwitchEffect('/masks/teddycigar')
         },
         name: 'teddycigar',
-        thumbPath: this.deepAR.masksPath + 'teddycigar'
+        thumbPath: this.deepAR.masksPath + '/thumb/teddycigar.svg'
       },
     ]
 

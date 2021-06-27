@@ -71,9 +71,9 @@ export class IORoom {
     if (this.EVENT == undefined)
         throw new Error(`Invalid Event ID: ${ this.ID }`);
 
-    this.FAN$room$duration = this.EVENT.topFansTimer ? this.EVENT.topFansTimer : 10;
+    this.FAN$room$duration = this.EVENT.topFansTimer;
     this.FAN$room$size = this.EVENT.topFansQueueSize + 1;
-    this.FAN$room$tick = this.FAN$room$duration;
+    this.FAN$room$tick = this.EVENT.topFansTimer;
     this.FAN$room = new Array(this.FAN$room$size).fill(undefined);
 
     this.INIT_COMPLETE.next(true);

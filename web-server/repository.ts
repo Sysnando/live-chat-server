@@ -14,7 +14,7 @@ export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extend
     return this.POOL$ = this.POOL$ || new Pool({
       database: 'ushowme',
 
-      //TODO PROD
+      ///TODO ROLLBACK BEFORE DEPLOY
       //host: ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'localhost',
       //user: ENV == Environment.PROD ? 'ushowme' : 'ushowme',
       //password: ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'ushowme',

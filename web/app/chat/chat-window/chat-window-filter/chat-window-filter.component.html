@@ -26,8 +26,7 @@
 >-->
 
 <carousel [height]="50" [cellWidth]="50" [arrows]="false">
-    <div *ngFor="let card of cards" class="carousel-cell" (click)="card.click()" style="background-color: #8f7f82; border-radius: 10px">
-        <!--img [src]="card.thumbPath"-->
-        <span>{{card.name}}</span>
+    <div *ngFor="let card of cards" class="carousel-cell" (click)="card.click()" style="background-color: white; border-radius: 10px">
+        <img [src]="card.thumbPath" [alt]="card.name">
     </div>
 </carousel>
