@@ -27,8 +27,8 @@ export class DeepARService {
 
     let deepAR = DeepAR({
       licenseKey: '2527787aca0aae55d4a5a07c547bbf4f2c25b92e9ebb8f39587bca34cb2dc6cd6668c93103aeff34',
-      canvasWidth: 640,
-      canvasHeight: 360,
+      canvasWidth: 1280,
+      canvasHeight: 720,
       canvas: canvas,
       numberOfFaces: 2, // how many faces we want to track min 1, max 4
       onInitialize: function () {
@@ -38,7 +38,6 @@ export class DeepARService {
         //outside of the SDK or you need to apply the masks to any video stream.
 
         deepAR.startVideo(true);
-
         if(effect)
           this.switchEffect(0, 'slot', path + '/masks/'+ effect, () => {
             // effect loaded
