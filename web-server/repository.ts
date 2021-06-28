@@ -15,9 +15,9 @@ export abstract class Repository<ENTITY extends Entity<ID, JSON, ROW>, ID extend
       database: 'ushowme',
 
       ///TODO ROLLBACK BEFORE DEPLOY
-      host: ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'localhost',
+      host: ENV == Environment.PROD ? 'ushowme.ci4glrtqzsfe.eu-central-1.rds.amazonaws.com' : 'qa-ushowme.csvxhv0uqncx.eu-west-1.rds.amazonaws.com',
       user: ENV == Environment.PROD ? 'ushowme' : 'ushowme',
-      password: ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'ushowme',
+      password: ENV == Environment.PROD ? '4b#e79^3gZumr5bJu6$Wm$38M55sMB' : 'Ck7NWQXWAvUjKsh*K4P!',
 
       // host: 'qa-ushowme.csvxhv0uqncx.eu-west-1.rds.amazonaws.com',
       // user: 'ushowme',
