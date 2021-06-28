@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
+import {ENV, Environment} from "../../../../web-server/environment";
 declare var DeepAR: any;
 
 //XTODO 1. (Nao funciona)tentar arrancar o sdk de acordo com o device para melhorar a experiencia e evitar o zoom
@@ -29,7 +30,7 @@ export class DeepARService {
     let path = this.masksPath;
 
     let deepAR = DeepAR({
-      licenseKey: '2527787aca0aae55d4a5a07c547bbf4f2c25b92e9ebb8f39587bca34cb2dc6cd6668c93103aeff34',
+      licenseKey: ENV == Environment.PROD ? 'cf701d52364aff29c32e77bc1158bb207b876e23351f4651ec2e08efe3f41fbdf2913ebdf989e0ef' : '2527787aca0aae55d4a5a07c547bbf4f2c25b92e9ebb8f39587bca34cb2dc6cd6668c93103aeff34', // PROD
       canvasWidth: 1280,
       canvasHeight: 720,
       canvas: canvas,
