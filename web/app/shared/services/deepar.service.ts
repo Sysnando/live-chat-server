@@ -3,12 +3,15 @@ import {BehaviorSubject} from "rxjs";
 declare var DeepAR: any;
 
 //XTODO 1. (Nao funciona)tentar arrancar o sdk de acordo com o device para melhorar a experiencia e evitar o zoom
-//TODO 1. ver como remover aquele zoom no tlm
+//XTODO 1. ver como remover aquele zoom no tlm
 //TODO 2. o counter não esta correto, pois o streamming esta 10 seg e a gravação esta 20
 //TODO 3. injectar o metada para ter a URL para o call to action
 //TODO 4. botão do call to action no evento
 //TODO 5. lentidão para apresentar o streamming
 //TODO 6. licença deepar(preciso do cartao)
+//TODO 7. arrancar o deepar antes, pois esta muito lento
+//TODO 8. Ver como melhorar o switch dos efeitos, pois esta mto lento no tlm
+//TODO 9. switch to sponsor video de acordo com o evento
 
 @Injectable({ providedIn: 'root'})
 export class DeepARService {
@@ -21,7 +24,7 @@ export class DeepARService {
   get canvasStream$() { return this.canvasStream.asObservable() }
   get masksPath() { return '/assets/deepar/effects/' }
 
-  start(video: HTMLVideoElement, canvas: CanvasElement, effect?: string) {
+  start(canvas: CanvasElement, effect?: string) {
 
     let path = this.masksPath;
 
@@ -30,7 +33,7 @@ export class DeepARService {
       canvasWidth: 1280,
       canvasHeight: 720,
       canvas: canvas,
-      numberOfFaces: 2, // how many faces we want to track min 1, max 4
+      numberOfFaces: 1, // how many faces we want to track min 1, max 4
       onInitialize: function () {
         //Used to pass the HTMLVideoElement to the DeepAR SDK. The SDK will grab frames
         //from the video element and render the frames with masks/filters to the canvas.
@@ -52,6 +55,8 @@ export class DeepARService {
 
     this.canvasStream.next(canvas.captureStream(30));
 
+    this.deepAR.stopVideo();
+
   }
 
   onSwitchEffect(effectName: string) {
@@ -60,6 +65,10 @@ export class DeepARService {
 
   onCleanEffect() {
     return this.deepAR.clearEffect('slot');
+  }
+
+  stop() {
+    this.deepAR && this.deepAR.shutdown();
   }
 }
 

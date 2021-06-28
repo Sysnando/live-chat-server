@@ -90,6 +90,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
   ngOnDestroy(): void {
     this.camera.stop();
     this.rtc.stop();
+    this.deepAR.stop();
 
     this.subscriptionCoutdown?.unsubscribe();
   }
@@ -102,6 +103,7 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
         this.modalClose.next(false);
         this.io.fanLeave();
     }
+    this.deepAR && this.deepAR.stop();
   }
 
   onClickPage(page: ChatWindowModalPage) {
@@ -113,11 +115,12 @@ export class ChatWindowModalComponent implements AfterViewInit, OnChanges, OnDes
     switch (this.modalPage = page) {
       case ChatWindowModalPage.SETUP_CAMERA:
         // this.camera.start(this.cameraPreview.nativeElement).then(() => this.changeDetector.markForCheck());
-        this.deepAR.start(null, this.canvasPreview.nativeElement);
+        this.deepAR.start(this.canvasPreview.nativeElement);
         break;
       case ChatWindowModalPage.STREAM_START:
         // this.camera.start(this.cameraPreview2.nativeElement).then(() => this.changeDetector.markForCheck());
-        this.deepAR.start(null, this.canvasPreview2.nativeElement, this.effect)
+
+        this.deepAR.start(this.canvasPreview2.nativeElement, this.effect)
 
         this.subscriptionCoutdown = this.io.fanCountdown$
           .pipe(take(1), switchMap(value => timer(0, 1000)
